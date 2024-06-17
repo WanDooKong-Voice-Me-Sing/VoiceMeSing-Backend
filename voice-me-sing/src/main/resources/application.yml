@@ -1,0 +1,17 @@
+server:
+  port: 8092
+spring:
+  application:
+    name: voice-me-sing
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/mydb?useSSL=false&useUnicode=true&serverTimezone=Asia/Seoul
+    username: root
+    password: 1009
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        show-sql: true
+        format_sql: true
