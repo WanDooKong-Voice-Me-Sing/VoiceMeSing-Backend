@@ -1,5 +1,6 @@
 package com.wandookong.voice_me_sing.config;
 
+import com.wandookong.voice_me_sing.jwt.JWTFilter;
 import com.wandookong.voice_me_sing.jwt.JWTUtil;
 import com.wandookong.voice_me_sing.jwt.LoginFilter;
 import lombok.RequiredArgsConstructor;
@@ -48,7 +49,7 @@ public class SecurityConfig {
         //경로별 인가 작업
         http.authorizeHttpRequests((auth)->auth
                 .requestMatchers("/login", "/", "/join").permitAll()
-                .requestMatchers("/admin").hasRole("admin")
+                .requestMatchers("/admin").hasRole("ADMIN")
                 .anyRequest().authenticated()
         );
 
@@ -60,6 +61,8 @@ public class SecurityConfig {
         //Login 필터 추가
         http.addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration), jwtUtil), UsernamePasswordAuthenticationFilter.class);
 
+        //JWT검증 필터 추가
+        http.addFilterBefore(new JWTFilter(jwtUtil), LoginFilter.class);
 
         return http.build();
 
