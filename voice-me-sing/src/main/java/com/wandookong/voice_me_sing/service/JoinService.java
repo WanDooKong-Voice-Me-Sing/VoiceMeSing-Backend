@@ -17,6 +17,7 @@ public class JoinService {
     public void joinProcess(JoinDTO joinDTO) {
         String username = joinDTO.getUsername();
         String password = joinDTO.getPassword();
+        String email = joinDTO.getEmail();
 
         boolean isUsernameExist = userRepository.existsByUsername(username);
 
@@ -27,7 +28,8 @@ public class JoinService {
         UserEntity userEntity = new UserEntity();
         userEntity.setUsername(username);
         userEntity.setPassword(bCryptPasswordEncoder.encode(password));
-        userEntity.setRole("ROLE_ADMIN");
+        userEntity.setEmail(email);
+        userEntity.setRole("ROLE_USER");
 
         userRepository.save(userEntity);
     }

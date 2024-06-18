@@ -28,6 +28,7 @@ public class SecurityConfig {
         return configuration.getAuthenticationManager();
     }
 
+    //비밀번호 해싱
     @Bean
     public BCryptPasswordEncoder bCryptPasswordEncoder() {
 
@@ -49,7 +50,6 @@ public class SecurityConfig {
         //경로별 인가 작업
         http.authorizeHttpRequests((auth)->auth
                 .requestMatchers("/login", "/", "/join").permitAll()
-                .requestMatchers("/admin").hasRole("ADMIN")
                 .anyRequest().authenticated()
         );
 
