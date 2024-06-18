@@ -4,7 +4,7 @@ spring:
   application:
     name: voice-me-sing
   jwt:
-    secret: aaabbbbbbbbbbbbbbbbbbbbcccccccccccccccccccccccccccccccccccccddddddddddddddddddddddddddddddddddddd
+    secret: vmfhaltmskdlstkfkdgodyroqkfwkdbalroqkfwkdbalaaaaaaaaaaaaaaaabbbbb
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://localhost:3306/mydb?useSSL=false&useUnicode=true&serverTimezone=Asia/Seoul
@@ -12,7 +12,7 @@ spring:
     password: 1009
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: create
     properties:
       hibernate:
         show-sql: true
