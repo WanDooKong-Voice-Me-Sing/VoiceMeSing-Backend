@@ -15,7 +15,7 @@ public class MainController {
 
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
 
-        return "main controller" + username;
+        return "main controller " + username;
     }
 
 }

@@ -15,10 +15,10 @@ public class SignUpController {
     private final SignUpService signUpService;
 
     @PostMapping("/signup")
-    public String signUpProcess(SignUpDTO signUpDTO) {
+    public String signUpC(SignUpDTO signUpDTO) {
 
         signUpService.signUpProcess(signUpDTO);
 
-        return "signup success";
+        return "sign up success";
     }
 }
