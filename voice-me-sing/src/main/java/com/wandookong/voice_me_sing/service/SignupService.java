@@ -18,6 +18,7 @@ public class SignupService {
         String username = signUpDTO.getUsername();
         String password = signUpDTO.getPassword();
         String email = signUpDTO.getEmail();
+        String nickname = signUpDTO.getNickname();
 
         boolean isUsernameExist = userRepository.existsByUsername(username);
 
@@ -26,9 +27,11 @@ public class SignupService {
         }
 
         UserEntity userEntity = new UserEntity();
+
         userEntity.setUsername(username);
         userEntity.setPassword(bCryptPasswordEncoder.encode(password));
         userEntity.setEmail(email);
+        userEntity.setNickname(nickname);
         userEntity.setRole("ROLE_USER");
 
         userRepository.save(userEntity);
