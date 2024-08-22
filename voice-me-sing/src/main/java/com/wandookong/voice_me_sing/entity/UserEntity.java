@@ -1,29 +1,30 @@
 package com.wandookong.voice_me_sing.entity;
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.Getter;
+import lombok.Setter;
 
 @Entity
-@Getter
-@Setter
-@ToString
-@Table(name = "UserTable")
+@Getter @Setter
+@Table(name = "user_table")
 public class UserEntity {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-    @Column
-    private String email;
-
-    @Column
+    @Column(unique = true, nullable = false)
     private String username;
 
-    @Column
+    @Column(nullable = false)
     private String password;
 
-    @Column
+    @Column(unique = true, nullable = false)
+    private String nickname;
+
+    @Column(nullable = false)
+    private String email;
+
+    @Column(nullable = false)
     private String role;
 
 }

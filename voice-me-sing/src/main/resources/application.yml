@@ -1,18 +1,15 @@
 server:
-  port: 8092
+  port: 8080
 spring:
   application:
     name: voice-me-sing
-  jwt:
-    secret: aaaaaaaabbbbbbbbbbbbbbbbbbbbbbccccccccccccccccccccccccccccccccccccccccaaaaaa
-  datasource:
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/mydb?useSSL=false&useUnicode=true&serverTimezone=Asia/Seoul
-    username: root
-    password: 1009
+  profiles:
+    include:
+      - db
+      - jwt
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: create
     properties:
       hibernate:
         show-sql: true

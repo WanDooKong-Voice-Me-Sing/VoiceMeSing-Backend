@@ -3,11 +3,10 @@ package com.wandookong.voice_me_sing.dto;
 import lombok.Getter;
 import lombok.Setter;
 
-@Getter
-@Setter
-public class SignUpDTO {
-
+@Getter @Setter
+public class SignupDTO {
     String username;
+    String nickname;
     String password;
     String email;
 }

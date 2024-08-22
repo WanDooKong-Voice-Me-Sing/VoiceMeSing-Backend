@@ -38,21 +38,13 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
-        //csrf disable
-        http.csrf((auth) -> auth.disable());
-
-        //Form 로그인 방식 disable
-        http.formLogin((auth) -> auth.disable());
-
-        //http basic 인증 방식 disable
-        http.httpBasic((auth) -> auth.disable());
+        http.csrf((csrf) -> csrf.disable());
+        http.formLogin((formLogin) -> formLogin.disable());
+        http.httpBasic((httpBasic) -> httpBasic.disable());
 
         //경로별 인가 작업
-        http.authorizeHttpRequests((auth)->auth
-                .requestMatchers("/login", "/", "/signup").permitAll()
-                .requestMatchers("/admin").hasRole("ADMIN")
-                .requestMatchers("/user").hasRole("USER")
-                .requestMatchers("/guest").hasRole("GUEST")
+        http.authorizeHttpRequests((auth) -> auth
+                .requestMatchers("/", "/login", "/signup").permitAll()
                 .anyRequest().authenticated()
         );
 
@@ -61,13 +53,10 @@ public class SecurityConfig {
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
         );
 
-        //Login 필터 추가
+        // 필터 설정
         http.addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration), jwtUtil), UsernamePasswordAuthenticationFilter.class);
-
-        //JWT검증 필터 추가
         http.addFilterBefore(new JWTFilter(jwtUtil), LoginFilter.class);
 
         return http.build();
-
     }
 }
