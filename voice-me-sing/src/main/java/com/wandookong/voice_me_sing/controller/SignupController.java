@@ -16,8 +16,10 @@ public class SignupController {
     @PostMapping("/signup")
     public String signupProcess(@RequestBody SignupDTO signupDTO) {
 
-        signupService.signup(signupDTO);
-
-        return "sign-up controller";
+        boolean signupSuccess = signupService.signup(signupDTO);
+        if (signupSuccess) {
+            return "signup success";
+        }
+        else return "signup failed";
     }
 }

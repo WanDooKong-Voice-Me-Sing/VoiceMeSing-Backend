@@ -14,26 +14,25 @@ public class SignupService {
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
-    public void signup(SignupDTO signUpDTO) {
-        String username = signUpDTO.getUsername();
-        String password = signUpDTO.getPassword();
-        String email = signUpDTO.getEmail();
-        String nickname = signUpDTO.getNickname();
+    public boolean signup(SignupDTO signupDTO) {
+//        String username = signupDTO.getUsername();
+        String password = signupDTO.getPassword();
+        String email = signupDTO.getEmail();
+        String nickname = signupDTO.getNickname();
 
-        boolean isUsernameExist = userRepository.existsByUsername(username);
+        boolean isExist = userRepository.existsByEmail(email);
 
-        if(isUsernameExist) {
-            return;
-        }
+        if(isExist) { return false; }
 
         UserEntity userEntity = new UserEntity();
 
-        userEntity.setUsername(username);
+//        userEntity.setUsername(username);
         userEntity.setPassword(bCryptPasswordEncoder.encode(password));
         userEntity.setEmail(email);
         userEntity.setNickname(nickname);
         userEntity.setRole("ROLE_USER");
 
         userRepository.save(userEntity);
+        return true;
     }
 }
