@@ -35,3 +35,8 @@ out/
 
 ### VS Code ###
 .vscode/
+
+### yaml config file ###
+application.yaml
+application-db.yaml
+application-jwt.yaml

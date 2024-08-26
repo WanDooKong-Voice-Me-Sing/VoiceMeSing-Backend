@@ -1,5 +1,3 @@
 # Default ignored files
 /shelf/
 /workspace.xml
-/src/main/resources/application-db.yaml
-/src/main/resources/pplication-jwt.yaml
