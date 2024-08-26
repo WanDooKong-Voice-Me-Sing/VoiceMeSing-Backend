@@ -33,7 +33,8 @@ public class JWTFilter extends OncePerRequestFilter {
         }
 
         System.out.println("authorization begin");
-        String token = authorization.split(" ")[1];
+//        String token = authorization.split(" ")[1];
+        String token = authorization.substring("Bearer ".length());
 
         if (jwtUtil.isExpired(token)) {
 
@@ -43,11 +44,12 @@ public class JWTFilter extends OncePerRequestFilter {
             return;
         }
 
-        String username = jwtUtil.getUsername(token);
+        String email = jwtUtil.getEmail(token);
         String role = jwtUtil.getRole(token);
 
         UserEntity userEntity = new UserEntity();
-        userEntity.setUsername(username);
+
+        userEntity.setEmail(email);
         userEntity.setPassword("password");
         userEntity.setRole(role);
 
