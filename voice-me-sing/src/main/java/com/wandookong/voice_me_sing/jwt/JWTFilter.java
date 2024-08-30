@@ -4,6 +4,7 @@ import com.wandookong.voice_me_sing.dto.CustomUserDetails;
 import com.wandookong.voice_me_sing.entity.UserEntity;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -22,9 +23,38 @@ public class JWTFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 
-        String authorization = request.getHeader("Authorization");
+        String authorization = null;
+        Cookie[] cookies = request.getCookies();
 
-        if (authorization == null || !authorization.startsWith("Bearer ")) {
+        System.out.println("cookies = " + cookies);
+
+        for (Cookie cookie : cookies) { // cookie O
+            if (cookie.getName().equals("Authorization")) {
+                authorization = cookie.getValue();
+                break;
+            }
+        }
+
+        if (authorization == null) {
+            authorization = request.getHeader("Authorization");
+        }
+
+//        if (cookies == null) { // cookie X
+//            authorization = request.getHeader("Authorization");
+//        }
+//        else {
+//            for (Cookie cookie : cookies) { // cookie O
+//                if (cookie.getName().equals("Authorization")) {
+//                    authorization = cookie.getValue();
+//                }
+//            }
+//        }
+
+        System.out.println("authorization = " + authorization);
+
+//        String authorization = request.getHeader("Authorization");
+
+        if (authorization == null) { // || !authorization.startsWith("Bearer ")) {
 
             System.out.println("token null");
             filterChain.doFilter(request, response);
@@ -34,7 +64,9 @@ public class JWTFilter extends OncePerRequestFilter {
 
         System.out.println("authorization begin");
 //        String token = authorization.split(" ")[1];
-        String token = authorization.substring("Bearer ".length());
+//        String token = authorization.substring("Bearer ".length());
+
+        String token = authorization;
 
         if (jwtUtil.isExpired(token)) {
 

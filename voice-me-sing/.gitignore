@@ -40,3 +40,4 @@ out/
 application.yaml
 application-db.yaml
 application-jwt.yaml
+application-sociallogin.yaml
