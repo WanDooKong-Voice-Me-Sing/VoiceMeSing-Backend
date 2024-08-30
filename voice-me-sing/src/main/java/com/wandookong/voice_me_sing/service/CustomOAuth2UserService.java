@@ -1,6 +1,9 @@
 package com.wandookong.voice_me_sing.service;
 
-import com.wandookong.voice_me_sing.dto.oauth2.*;
+import com.wandookong.voice_me_sing.dto.oauth2.CustomOAuth2User;
+import com.wandookong.voice_me_sing.dto.oauth2.NaverResponse;
+import com.wandookong.voice_me_sing.dto.oauth2.OAuth2Response;
+import com.wandookong.voice_me_sing.dto.oauth2.OAuth2UserDTO;
 import com.wandookong.voice_me_sing.entity.UserEntity;
 import com.wandookong.voice_me_sing.repository.UserRepository;
 import lombok.RequiredArgsConstructor;

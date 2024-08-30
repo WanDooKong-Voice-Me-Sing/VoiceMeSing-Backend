@@ -8,7 +8,6 @@ public class MainController {
 
     @GetMapping("/")
     public String mainProcess() {
-
 //        String username = SecurityContextHolder.getContext().getAuthentication().getName();
 
         return "main controller";

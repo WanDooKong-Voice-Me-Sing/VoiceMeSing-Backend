@@ -7,8 +7,6 @@ import lombok.ToString;
 @Getter @Setter @ToString
 public class OAuth2UserDTO {
 
-    // email, password, nickname (E: + id)
-
 //    private String username;
 //    private String name;
     private String email;

@@ -1,24 +1,25 @@
 package com.wandookong.voice_me_sing.config;
 
+import com.wandookong.voice_me_sing.jwt.CustomLogoutFilter;
 import com.wandookong.voice_me_sing.jwt.JWTFilter;
 import com.wandookong.voice_me_sing.jwt.JWTUtil;
 import com.wandookong.voice_me_sing.jwt.LoginFilter;
+import com.wandookong.voice_me_sing.oauth2.CookieUtil;
 import com.wandookong.voice_me_sing.oauth2.CustomSuccessHandler;
+import com.wandookong.voice_me_sing.repository.RefreshTokenRepository;
 import com.wandookong.voice_me_sing.service.CustomOAuth2UserService;
-import com.wandookong.voice_me_sing.service.CustomUserDetailsService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.authentication.logout.LogoutFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 
@@ -33,18 +34,13 @@ public class SecurityConfig {
     private final JWTUtil jwtUtil;
     private final CustomOAuth2UserService customOAuth2UserService;
     private final CustomSuccessHandler customSuccessHandler;
+    private final RefreshTokenRepository refreshTokenRepository;
+    private final CookieUtil cookieUtil;
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
         return configuration.getAuthenticationManager();
     }
-
-    //비밀번호 해싱
-//    @Bean
-//    public BCryptPasswordEncoder bCryptPasswordEncoder() {
-//
-//        return new BCryptPasswordEncoder();
-//    }
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -55,14 +51,14 @@ public class SecurityConfig {
 
                 CorsConfiguration configuration = new CorsConfiguration();
 
-                configuration.setAllowedOrigins(Collections.singletonList("*"));
+                configuration.setAllowedOrigins(Collections.singletonList("*")); //
                 configuration.setAllowedMethods(Collections.singletonList("*"));
                 configuration.setAllowCredentials(true);
                 configuration.setAllowedHeaders(Collections.singletonList("*"));
                 configuration.setMaxAge(3600L);
-                configuration.setExposedHeaders(Collections.singletonList("Authorization"));
 
-                configuration.setAllowCredentials(true);
+                configuration.setExposedHeaders(Collections.singletonList("Set-Cookie"));
+                configuration.setExposedHeaders(Collections.singletonList("access"));
 
                 return configuration;
             }
@@ -81,7 +77,8 @@ public class SecurityConfig {
 
         //경로별 인가 작업
         http.authorizeHttpRequests((auth) -> auth
-                .requestMatchers("/", "/login", "/signup").permitAll()
+                .requestMatchers("/", "/login", "/signup", "/reissue").permitAll()
+                .requestMatchers("/admin").hasRole("ADMIN")
                 .anyRequest().authenticated()
         );
 
@@ -91,8 +88,9 @@ public class SecurityConfig {
         );
 
         // 필터 설정
-        http.addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration), jwtUtil), UsernamePasswordAuthenticationFilter.class);
+        http.addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration), jwtUtil, refreshTokenRepository, cookieUtil), UsernamePasswordAuthenticationFilter.class);
         http.addFilterBefore(new JWTFilter(jwtUtil), LoginFilter.class);
+        http.addFilterBefore(new CustomLogoutFilter(jwtUtil, refreshTokenRepository), LogoutFilter.class);
 
         return http.build();
     }

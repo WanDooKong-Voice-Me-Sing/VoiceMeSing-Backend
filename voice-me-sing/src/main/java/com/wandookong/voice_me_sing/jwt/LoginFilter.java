@@ -3,6 +3,9 @@ package com.wandookong.voice_me_sing.jwt;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wandookong.voice_me_sing.dto.CustomUserDetails;
 import com.wandookong.voice_me_sing.dto.LoginDTO;
+import com.wandookong.voice_me_sing.entity.RefreshTokenEntity;
+import com.wandookong.voice_me_sing.oauth2.CookieUtil;
+import com.wandookong.voice_me_sing.repository.RefreshTokenRepository;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletInputStream;
 import jakarta.servlet.http.HttpServletRequest;
@@ -19,6 +22,7 @@ import org.springframework.util.StreamUtils;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Collection;
+import java.util.Date;
 import java.util.Iterator;
 
 @RequiredArgsConstructor
@@ -26,12 +30,14 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
     private final AuthenticationManager authenticationManager;
     private final JWTUtil jwtUtil;
+    private final RefreshTokenRepository refreshTokenRepository;
+    private final CookieUtil cookieUtil;
 
     // 로그인 로직 (검증)
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
 
-        LoginDTO loginDTO = new LoginDTO();
+        LoginDTO loginDTO;
 
         try {
             ObjectMapper objectMapper = new ObjectMapper();
@@ -57,6 +63,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authentication) {
         System.out.println("login success");
 
+        // 유저 정보
         CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
 
         String email = customUserDetails.getEmail();
@@ -66,11 +73,18 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         GrantedAuthority authority = iterator.next();
         String role = authority.getAuthority();
 
-        // email 과 role 값으로 JWT 생성
-        String token = jwtUtil.createJwt(email, role, 60*60*60L);
+        // email 과 role 값으로 토큰 생성 (access, refresh)
+        String access = jwtUtil.createJwt("access", email, role, 600000L); // 10분
+        String refresh = jwtUtil.createJwt("refresh", email, role, 86400000L); // 24시간
 
+        // refresh 토큰 DB 저장
+        addRefreshEntity(email, refresh); // 24시간
+
+        // 응답 설정
 //        response.addHeader("Authorization", "Bearer " + token);
-        response.addHeader("Authorization", token);
+        response.addHeader("access", access);
+        response.addCookie(cookieUtil.createCookie("refresh", refresh));
+        response.setStatus(HttpServletResponse.SC_OK);
     }
 
     // 로그인 실패 시 실행
@@ -79,5 +93,17 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         System.out.println("login failed");
 
         response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+    }
+
+    private void addRefreshEntity(String email, String refresh) {
+
+        Date date = new Date(System.currentTimeMillis() + 86400000L); // 24시간
+
+        RefreshTokenEntity refreshEntity = new RefreshTokenEntity();
+        refreshEntity.setEmail(email);
+        refreshEntity.setRefreshToken(refresh);
+        refreshEntity.setExpiration(date.toString());
+
+        refreshTokenRepository.save(refreshEntity);
     }
 }

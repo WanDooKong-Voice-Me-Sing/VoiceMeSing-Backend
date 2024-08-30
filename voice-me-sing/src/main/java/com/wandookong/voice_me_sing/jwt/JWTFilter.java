@@ -2,6 +2,7 @@ package com.wandookong.voice_me_sing.jwt;
 
 import com.wandookong.voice_me_sing.dto.CustomUserDetails;
 import com.wandookong.voice_me_sing.entity.UserEntity;
+import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
@@ -14,6 +15,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.Arrays;
 
 @RequiredArgsConstructor
@@ -24,50 +26,66 @@ public class JWTFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 
-        String authorization = null;
+        String accessToken = null;
         Cookie[] cookies = request.getCookies();
 
         System.out.println("cookies = " + Arrays.toString(cookies));
 
-        // cookie 有
-        for (Cookie cookie : cookies) {
-            if (cookie.getName().equals("Authorization")) {
-                authorization = cookie.getValue();
-                break;
+        // 쿠키와 헤더 사용에 따른 분리
+        // case 0: 쿠키 존재
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                if (cookie.getName().equals("access")) {
+                    accessToken = cookie.getValue();
+                    break;
+                }
             }
         }
-
-        // cookie 無
-        if (authorization == null) {
-            authorization = request.getHeader("Authorization");
+        // case 1: 쿠키 존재 X
+        if (accessToken == null) {
+            accessToken = request.getHeader("access");
         }
 
-        System.out.println("authorization = " + authorization);
+        System.out.println("accessToken = " + accessToken);
 
-        if (authorization == null) { // || !authorization.startsWith("Bearer ")) {
-
-            System.out.println("token null");
+        // accessToken null 확인
+        if (accessToken == null) {
+            System.out.println("access token null");
             filterChain.doFilter(request, response);
 
             return;
         }
 
         System.out.println("authorization begin");
-//        String token = authorization.split(" ")[1];
-//        String token = authorization.substring("Bearer ".length());
 
-        String token = authorization;
+        // accessToken 만료 확인
+        try {
+            jwtUtil.isExpired(accessToken);
+        } catch (ExpiredJwtException e) {
 
-        if (jwtUtil.isExpired(token)) {
-
-            System.out.println("token expired");
-            filterChain.doFilter(request, response);
+            PrintWriter writer = response.getWriter();
+            writer.print("access token expired");
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 
             return;
         }
 
-        String email = jwtUtil.getEmail(token);
-        String role = jwtUtil.getRole(token);
+        // "access" token 인지 확인
+        String category = jwtUtil.getCategory(accessToken);
+
+        if (!category.equals("access")) {
+
+            PrintWriter writer = response.getWriter();
+            writer.print("invalid access token");
+            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+
+            return;
+        }
+
+        System.out.println("authorization done");
+
+        String email = jwtUtil.getEmail(accessToken);
+        String role = jwtUtil.getRole(accessToken);
 
         UserEntity userEntity = new UserEntity();
 
@@ -80,6 +98,8 @@ public class JWTFilter extends OncePerRequestFilter {
         Authentication authToken = new UsernamePasswordAuthenticationToken(customUserDetails, null, customUserDetails.getAuthorities());
 
         SecurityContextHolder.getContext().setAuthentication(authToken);
+
+        System.out.println("session created");
 
         filterChain.doFilter(request, response);
     }
