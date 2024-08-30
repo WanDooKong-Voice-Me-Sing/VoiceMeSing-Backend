@@ -14,16 +14,18 @@ public class SignupService {
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
+    // 회원가입 로직
     public boolean signup(SignupDTO signupDTO) {
 //        String username = signupDTO.getUsername();
         String password = signupDTO.getPassword();
         String email = signupDTO.getEmail();
         String nickname = signupDTO.getNickname();
 
+        // 회원 존재 여부 확인
         boolean isExist = userRepository.existsByEmail(email);
+        if (isExist) return false;
 
-        if(isExist) { return false; }
-
+        // 회원 저장
         UserEntity userEntity = new UserEntity();
 
 //        userEntity.setUsername(username);
@@ -33,6 +35,7 @@ public class SignupService {
         userEntity.setRole("ROLE_USER");
 
         userRepository.save(userEntity);
+
         return true;
     }
 }

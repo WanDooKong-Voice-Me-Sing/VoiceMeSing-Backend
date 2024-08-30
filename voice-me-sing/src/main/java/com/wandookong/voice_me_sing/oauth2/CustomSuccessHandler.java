@@ -22,6 +22,7 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 
     private final JWTUtil jwtUtil;
 
+    // 로그인 성공
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
 
@@ -34,7 +35,8 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         GrantedAuthority auth = iterator.next();
         String role = auth.getAuthority();
 
-        String token = jwtUtil.createJwt(email, role, 60*60*10L);
+        // email 과 role 값으로 JWT 생성
+        String token = jwtUtil.createJwt(email, role, 60*60*60L);
 
         response.addCookie(createCookie("Authorization", token));
         response.setStatus(HttpServletResponse.SC_OK);

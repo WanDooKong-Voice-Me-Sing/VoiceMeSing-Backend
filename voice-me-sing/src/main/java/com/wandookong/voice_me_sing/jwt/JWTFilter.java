@@ -14,6 +14,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.Arrays;
 
 @RequiredArgsConstructor
 public class JWTFilter extends OncePerRequestFilter {
@@ -26,33 +27,22 @@ public class JWTFilter extends OncePerRequestFilter {
         String authorization = null;
         Cookie[] cookies = request.getCookies();
 
-        System.out.println("cookies = " + cookies);
+        System.out.println("cookies = " + Arrays.toString(cookies));
 
-        for (Cookie cookie : cookies) { // cookie O
+        // cookie 有
+        for (Cookie cookie : cookies) {
             if (cookie.getName().equals("Authorization")) {
                 authorization = cookie.getValue();
                 break;
             }
         }
 
+        // cookie 無
         if (authorization == null) {
             authorization = request.getHeader("Authorization");
         }
 
-//        if (cookies == null) { // cookie X
-//            authorization = request.getHeader("Authorization");
-//        }
-//        else {
-//            for (Cookie cookie : cookies) { // cookie O
-//                if (cookie.getName().equals("Authorization")) {
-//                    authorization = cookie.getValue();
-//                }
-//            }
-//        }
-
         System.out.println("authorization = " + authorization);
-
-//        String authorization = request.getHeader("Authorization");
 
         if (authorization == null) { // || !authorization.startsWith("Bearer ")) {
 

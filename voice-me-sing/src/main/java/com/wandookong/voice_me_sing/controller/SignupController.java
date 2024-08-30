@@ -17,9 +17,8 @@ public class SignupController {
     public String signupProcess(@RequestBody SignupDTO signupDTO) {
 
         boolean signupSuccess = signupService.signup(signupDTO);
-        if (signupSuccess) {
-            return "signup success";
-        }
+
+        if (signupSuccess) return "signup success";
         else return "signup failed";
     }
 }

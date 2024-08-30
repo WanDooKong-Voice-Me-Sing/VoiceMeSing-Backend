@@ -27,7 +27,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
     private final AuthenticationManager authenticationManager;
     private final JWTUtil jwtUtil;
 
-    //로그인 검증
+    // 로그인 로직 (검증)
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
 
@@ -46,35 +46,37 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         String email = loginDTO.getEmail();
         String password = loginDTO.getPassword();
 
+        // email 과 password 로 로그인 검증
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(email, password, null);
 
         return authenticationManager.authenticate(authenticationToken);
     }
 
-    //로그인 성공 시 실행 (-> JWT 발급)
+    // 로그인 성공 시 실행 (-> JWT 발급)
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authentication) {
         System.out.println("login success");
 
         CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
+
         String email = customUserDetails.getEmail();
 
         Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
         Iterator<? extends GrantedAuthority> iterator = authorities.iterator();
-        GrantedAuthority auth = iterator.next();
+        GrantedAuthority authority = iterator.next();
+        String role = authority.getAuthority();
 
-        String role = auth.getAuthority();
-
-        String token = jwtUtil.createJwt(email, role, 60*60*10L);
+        // email 과 role 값으로 JWT 생성
+        String token = jwtUtil.createJwt(email, role, 60*60*60L);
 
 //        response.addHeader("Authorization", "Bearer " + token);
         response.addHeader("Authorization", token);
     }
 
-    //로그인 실패 시 실행
+    // 로그인 실패 시 실행
     @Override
     protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) {
-        System.out.println("login fail");
+        System.out.println("login failed");
 
         response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
     }
