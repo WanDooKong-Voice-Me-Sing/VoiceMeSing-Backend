@@ -4,8 +4,9 @@ import java.util.Map;
 
 public class NaverResponse implements OAuth2Response { // 이메일과 이름 제공
 
-    private Map<String, Object> attributes;
+    private final Map<String, Object> attributes;
 
+    @SuppressWarnings("unchecked")
     public NaverResponse(Map<String, Object> attributes) {
         this.attributes = (Map<String, Object>) attributes.get("response");
     }
