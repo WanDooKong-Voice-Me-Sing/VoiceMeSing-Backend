@@ -27,12 +27,13 @@ public class SignupController {
 
         ObjectMapper objectMapper = new ObjectMapper();
         Map<String, Object> map = objectMapper.convertValue(signupDTO, new TypeReference<Map<String, Object>>() {});
-        ResponseDTO responseDTO = new ResponseDTO("success", "signup success", map);
+        ResponseDTO success = new ResponseDTO("success", "signup success", map);
+        ResponseDTO fail = new ResponseDTO("fail", "signup fail", null);
 
         if (signupSuccess) {
-            return ResponseEntity.status(HttpStatus.CREATED).body(responseDTO);
+            return ResponseEntity.status(HttpStatus.CREATED).body(success);
         } else {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body("signup failed");
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(fail);
         }
 
 //        if (signupSuccess) return "signup success";
