@@ -39,10 +39,11 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         String access = jwtUtil.createJwt("access", email, role, 600000L); // 10분
         String refresh = jwtUtil.createJwt("refresh", email, role, 86400000L); // 24시간
 
+//        response.addHeader("access", access);
         response.addCookie(cookieUtil.createCookie("access", access)); // ?
         response.addCookie(cookieUtil.createCookie("refresh", refresh));
         response.setStatus(HttpServletResponse.SC_OK);
-        response.sendRedirect("http://localhost:8080/");
+        response.sendRedirect("http://localhost:3000/");
     }
 
 }
