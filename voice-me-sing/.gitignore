@@ -41,3 +41,4 @@ application.yaml
 application-db.yaml
 application-jwt.yaml
 application-oauth2.yaml
+keystore.p12

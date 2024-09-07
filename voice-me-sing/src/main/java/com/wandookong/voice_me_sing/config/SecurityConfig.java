@@ -65,6 +65,10 @@ public class SecurityConfig {
             }
         }));
 
+        // https 설정
+        http.requiresChannel((channel) -> channel
+                .anyRequest().requiresSecure());
+
         http.csrf((csrf) -> csrf.disable());
         http.formLogin((formLogin) -> formLogin.disable());
         http.httpBasic((httpBasic) -> httpBasic.disable());

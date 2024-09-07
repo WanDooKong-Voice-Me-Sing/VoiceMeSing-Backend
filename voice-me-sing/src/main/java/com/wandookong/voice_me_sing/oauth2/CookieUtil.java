@@ -13,9 +13,10 @@ public class CookieUtil {
 //        else if (key.equals("refresh")) cookie.setPath("/reissue");
 
         cookie.setPath("/");
-        cookie.setHttpOnly(true);
+        cookie.setHttpOnly(false);
         cookie.setMaxAge(60*60*60);
-//        cookie.setSecure(true);
+        cookie.setSecure(true);
+        cookie.setAttribute("SameSite", "None");
 
         System.out.println(key + " cookie created");
 
