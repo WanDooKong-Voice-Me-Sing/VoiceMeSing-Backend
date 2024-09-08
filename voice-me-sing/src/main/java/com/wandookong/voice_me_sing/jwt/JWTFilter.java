@@ -99,7 +99,7 @@ public class JWTFilter extends OncePerRequestFilter {
 
         SecurityContextHolder.getContext().setAuthentication(authToken);
 
-        System.out.println("session created");
+        System.out.println("temporary session for the request created");
 
         filterChain.doFilter(request, response);
     }
