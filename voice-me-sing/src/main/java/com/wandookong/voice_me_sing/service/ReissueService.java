@@ -9,7 +9,6 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -24,7 +23,7 @@ public class ReissueService {
     private final RefreshTokenRepository refreshTokenRepository;
     private final CookieUtil cookieUtil;
 
-    public ResponseEntity<?> reissue(HttpServletRequest request, HttpServletResponse response) {
+    public ResponseEntity<?> reissueAccessRefresh(HttpServletRequest request, HttpServletResponse response) {
 
         String refreshToken = null;
         Cookie[] cookies = request.getCookies();
@@ -59,10 +58,11 @@ public class ReissueService {
 
         // DB에 refresh 토큰 존재하는지 확인
         Boolean isExist = refreshTokenRepository.existsByRefreshToken(refreshToken);
-        System.out.println(isExist);
         if (!isExist) {
             return new ResponseEntity<>("refresh token not exist", HttpStatus.BAD_REQUEST);
         }
+
+        System.out.println("valid refresh token");
 
         // 새로운 access/refresh token 생성
         String email = jwtUtil.getEmail(refreshToken);
