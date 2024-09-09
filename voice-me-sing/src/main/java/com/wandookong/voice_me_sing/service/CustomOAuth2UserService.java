@@ -1,9 +1,6 @@
 package com.wandookong.voice_me_sing.service;
 
-import com.wandookong.voice_me_sing.dto.oauth2.CustomOAuth2User;
-import com.wandookong.voice_me_sing.dto.oauth2.NaverResponse;
-import com.wandookong.voice_me_sing.dto.oauth2.OAuth2Response;
-import com.wandookong.voice_me_sing.dto.oauth2.OAuth2UserDTO;
+import com.wandookong.voice_me_sing.dto.oauth2.*;
 import com.wandookong.voice_me_sing.entity.UserEntity;
 import com.wandookong.voice_me_sing.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -33,6 +30,9 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         OAuth2Response oAuth2Response = null;
         if (registrationId.equals("naver")) {
             oAuth2Response = new NaverResponse(oAuth2User.getAttributes());
+        }
+        else if (registrationId.equals("kakao")) {
+            oAuth2Response = new KakaoResponse(oAuth2User.getAttributes());
         }
 
         assert oAuth2Response != null;
