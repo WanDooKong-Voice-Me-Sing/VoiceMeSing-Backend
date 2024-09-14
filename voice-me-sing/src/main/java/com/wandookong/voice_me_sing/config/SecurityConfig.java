@@ -82,9 +82,9 @@ public class SecurityConfig {
 
         //경로별 인가 작업
         http.authorizeHttpRequests((auth) -> auth
-                .requestMatchers("/", "/login", "/signup", "/reissue").permitAll()
+                .requestMatchers("/", "/login", "/signup", "/reissue", "/form", "/train-voice").permitAll()
                 .requestMatchers("/admin").hasRole("ADMIN")
-                .anyRequest().authenticated()
+                .anyRequest().permitAll()
         );
 
         //세션 설정

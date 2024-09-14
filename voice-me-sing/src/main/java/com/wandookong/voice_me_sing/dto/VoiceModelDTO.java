@@ -6,8 +6,7 @@ import lombok.Setter;
 
 @Getter @Setter
 @AllArgsConstructor
-public class ResponseDTO<T> {
-    private String status;
-    private String message;
-    private T data;
+public class VoiceModelDTO {
+    private Long voiceModelId;
+    private String voiceModelName;
 }

@@ -4,12 +4,15 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.List;
+
 @Entity
 @Getter @Setter
 @Table(name = "user_table")
 public class UserEntity {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "user_id")
     private Long id;
 
 //    @Column(unique = true, nullable = false)
@@ -26,5 +29,8 @@ public class UserEntity {
 
     @Column(nullable = false)
     private String role;
+
+    @OneToMany(mappedBy = "userEntity", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<VoiceModelEntity> voiceModels;
 
 }
