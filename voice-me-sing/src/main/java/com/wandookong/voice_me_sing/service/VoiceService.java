@@ -70,7 +70,7 @@ public class VoiceService {
                 .toList();
 
         // 응답 데이터 생성
-        ResponseDTO<List<VoiceModelDTO>> responseDTO = new ResponseDTO<>("success", "get voice models success", voiceModelDTOs);
+        ResponseDTO<List<VoiceModelDTO>> responseDTO = new ResponseDTO<>("success", "get voice models successfully", voiceModelDTOs);
 
         return ResponseEntity.ok().body(responseDTO);
 

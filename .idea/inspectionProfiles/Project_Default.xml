@@ -5,6 +5,7 @@
       <option name="customHeaders">
         <set>
           <option value="access" />
+          <option value="refresh" />
         </set>
       </option>
     </inspection_tool>
