@@ -18,7 +18,7 @@ public class VoiceModelEntity {
     private String voiceModelName;
     private String FilePath; // *** voiceModelFile
 
-    @ManyToOne(fetch = FetchType.LAZY) // ***
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private UserEntity userEntity;
 }

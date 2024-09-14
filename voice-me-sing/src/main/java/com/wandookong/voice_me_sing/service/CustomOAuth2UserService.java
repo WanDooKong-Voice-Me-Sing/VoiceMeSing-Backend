@@ -44,19 +44,20 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         Optional<UserEntity> optionalUserEntity = userRepository.findByEmail(email);
 
         if (optionalUserEntity.isPresent()) { // 존재 O, 업데이트
-            // 회원 정보 업데이트 (변경 가능 여부:: id:X email:O password:X nickname:O role:X)
+            // 회원 정보 업데이트 (변경 가능 여부:: id:X email:O password:X nickname:O role:X) - 1.0
+            // 회원 정보 업데이트 (변경 가능 여부:: id:X email:X password:X nickname:X role:X) - 2.0
             UserEntity userEntity = optionalUserEntity.get();
-
-            userEntity.setEmail(oAuth2Response.getEmail());
-            userEntity.setNickname(oAuth2Response.getName());
-
-            userRepository.save(userEntity);
+//
+//            userEntity.setEmail(oAuth2Response.getEmail());
+//            userEntity.setNickname(oAuth2Response.getName());
+//
+//            userRepository.save(userEntity);
 
             // 로그인 검증
             OAuth2UserDTO userDTO = new OAuth2UserDTO();
 
-            userDTO.setEmail(oAuth2Response.getEmail());
-            userDTO.setNickname(oAuth2Response.getName());
+            userDTO.setEmail(userEntity.getEmail());
+            userDTO.setNickname(userEntity.getNickname());
             userDTO.setRole(userEntity.getRole());
 
             return new CustomOAuth2User(userDTO);
@@ -68,7 +69,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 //            userEntity.setUsername(username);
             userEntity.setEmail(oAuth2Response.getEmail());
             userEntity.setPassword(bCryptPasswordEncoder.encode(password));
-            userEntity.setNickname(oAuth2Response.getName());
+            userEntity.setNickname(oAuth2Response.getName() + "_" + (String.valueOf(System.currentTimeMillis())).substring(8));
             userEntity.setRole("ROLE_USER");
 
             userRepository.save(userEntity);

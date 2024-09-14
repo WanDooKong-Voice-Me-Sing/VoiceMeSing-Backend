@@ -1,7 +1,8 @@
 package com.wandookong.voice_me_sing.entity;
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Getter

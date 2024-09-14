@@ -1,7 +1,6 @@
 package com.wandookong.voice_me_sing.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.persistence.Column;
 import lombok.Getter;
 import lombok.Setter;
 
