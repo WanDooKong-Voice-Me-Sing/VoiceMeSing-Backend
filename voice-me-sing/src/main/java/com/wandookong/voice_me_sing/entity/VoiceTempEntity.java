@@ -6,7 +6,7 @@ import lombok.*;
 @Entity
 @Getter
 //@Setter
-@Table(name = "audio_temp")
+@Table(name = "voice_temp")
 @NoArgsConstructor
 public class VoiceTempEntity {
 

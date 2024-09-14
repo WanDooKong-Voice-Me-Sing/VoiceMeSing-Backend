@@ -6,7 +6,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -14,11 +13,11 @@ import java.io.IOException;
 
 @RestController
 @RequiredArgsConstructor
-public class SongController {
+public class VoiceController {
 
     private final VoiceService voiceService;
 
-    @PostMapping("/train-voice") // 1. 사용자 음성 저장 2. AI 서버에 음성 **모델 생성** 요청
+    @PostMapping("/train-voice") // 1. FE->BE::사용자 음성 저장 2. BE->AI::AI 서버에 음성 **모델 생성** 요청
     public ResponseEntity<?> uploadAudio(TrainVoiceProcessDTO trainVoiceProcessDTO) throws IOException { // *** IO
 
         return voiceService.saveAudioFile(trainVoiceProcessDTO);
@@ -29,28 +28,6 @@ public class SongController {
         String userToken = request.getHeader("access");
 
         return voiceService.getVoiceModels(userToken);
-    }
-
-
-
-    @PostMapping("create-song")
-    public String createSong() {
-        return "create-song";
-    }
-
-    @GetMapping("/collection-song")
-    public String collectionSong() {
-        return "collection-song";
-    }
-
-    @GetMapping("/collection/{id}")
-    public String collection(@PathVariable int id) {
-        return "collection";
-    }
-
-    @GetMapping("profile")
-    public String profile() {
-        return "profile";
     }
 
 }

@@ -27,8 +27,8 @@ public class SignupController {
 
         ObjectMapper objectMapper = new ObjectMapper();
         Map<String, Object> map = objectMapper.convertValue(signupDTO, new TypeReference<Map<String, Object>>() {});
-        ResponseDTO success = new ResponseDTO("success", "signup success", map);
-        ResponseDTO fail = new ResponseDTO("fail", "signup fail", null);
+        ResponseDTO<Map<String, Object>> success = new ResponseDTO<>("success", "signup success", map);
+        ResponseDTO<Map<String, Object>> fail = new ResponseDTO<>("fail", "signup fail", null);
 
         if (signupSuccess) {
             return ResponseEntity.status(HttpStatus.CREATED).body(success);

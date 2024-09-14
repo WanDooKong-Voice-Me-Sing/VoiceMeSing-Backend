@@ -8,6 +8,7 @@ import lombok.ToString;
 @Entity
 @Getter @Setter
 @ToString
+@Table(name = "refresh_token")
 public class RefreshTokenEntity {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)

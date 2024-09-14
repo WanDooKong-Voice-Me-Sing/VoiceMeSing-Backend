@@ -2,18 +2,25 @@ package com.wandookong.voice_me_sing.service;
 
 import com.wandookong.voice_me_sing.dto.ResponseDTO;
 import com.wandookong.voice_me_sing.dto.TrainVoiceProcessDTO;
+import com.wandookong.voice_me_sing.dto.VoiceModelDTO;
+import com.wandookong.voice_me_sing.entity.UserEntity;
+import com.wandookong.voice_me_sing.entity.VoiceModelEntity;
 import com.wandookong.voice_me_sing.entity.VoiceTempEntity;
 import com.wandookong.voice_me_sing.jwt.JWTUtil;
-import com.wandookong.voice_me_sing.repository.VoiceTempRepository;
 import com.wandookong.voice_me_sing.repository.UserRepository;
+import com.wandookong.voice_me_sing.repository.VoiceTempRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -39,16 +46,10 @@ public class VoiceService {
         VoiceTempEntity voiceTempEntity = new VoiceTempEntity(originalVoiceFileName, storedVoiceFileName, savePath, modelName);
         voiceTempRepository.save(voiceTempEntity);
 
-        // python 서버 요청 로직 *** -> voiceModel 테이블에 모델 저장
-        /* voiceModel 테이블
-            1. voice_model_id
-            2. voice_model_name
-            3. voice_model_file
-            4. user_email *** 나중에 Id로 변경 (service 로직도 수정)
-        */
+        // python 서버 요청 로직 *** -> voiceModel 테이블에 모델 저장 -> python 서버는 filename 과 modelname 사용
 
         // 저장 결과 리턴
-        ResponseDTO responseDTO = new ResponseDTO("success", "file upload success", Map.of(
+        ResponseDTO<Map<String, Object>> responseDTO = new ResponseDTO<>("success", "file upload success", Map.of(
                 "voiceFileName", originalVoiceFileName,
                 "modelName", modelName
         ));
@@ -56,10 +57,24 @@ public class VoiceService {
     }
 
     public ResponseEntity<?> getVoiceModels(String userToken) {
+        // 해당 사용자 검색
         String email = jwtUtil.getEmail(userToken);
 
+        Optional<UserEntity> optionalUserEntity = userRepository.findByEmail(email);
+        if (optionalUserEntity.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ResponseDTO<String>("fail", "no user", null));
+        }
+        UserEntity userEntity = optionalUserEntity.get();
 
+        // 사용자 소유 VoiceModels 의 DTO 리스트 생성
+        List<VoiceModelDTO> voiceModelDTOs = userEntity.getVoiceModels().stream()
+                .map(vm -> new VoiceModelDTO(vm.getVoiceModelId(), vm.getVoiceModelName()))
+                .toList();
 
-        return null;
+        // 응답 데이터 생성
+        ResponseDTO<List<VoiceModelDTO>> responseDTO = new ResponseDTO<>("success", "get voice models success", voiceModelDTOs);
+
+        return ResponseEntity.ok().body(responseDTO);
+
     }
 }
