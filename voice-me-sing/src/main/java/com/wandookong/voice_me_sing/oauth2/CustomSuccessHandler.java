@@ -43,7 +43,7 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         response.addCookie(cookieUtil.createCookie("access", access)); // ?
         response.addCookie(cookieUtil.createCookie("refresh", refresh));
         response.setStatus(HttpServletResponse.SC_OK);
-        response.sendRedirect("https://localhost:3000/"); // 변경
+        response.sendRedirect("https://localhost:3000/"); // 수정***
     }
 
 }
