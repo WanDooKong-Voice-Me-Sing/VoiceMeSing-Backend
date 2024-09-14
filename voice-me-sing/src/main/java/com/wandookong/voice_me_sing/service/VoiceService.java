@@ -1,10 +1,9 @@
 package com.wandookong.voice_me_sing.service;
 
 import com.wandookong.voice_me_sing.dto.ResponseDTO;
-import com.wandookong.voice_me_sing.dto.TrainVoiceProcessDTO;
+import com.wandookong.voice_me_sing.dto.TrainVoiceDTO;
 import com.wandookong.voice_me_sing.dto.VoiceModelDTO;
 import com.wandookong.voice_me_sing.entity.UserEntity;
-import com.wandookong.voice_me_sing.entity.VoiceModelEntity;
 import com.wandookong.voice_me_sing.entity.VoiceTempEntity;
 import com.wandookong.voice_me_sing.jwt.JWTUtil;
 import com.wandookong.voice_me_sing.repository.UserRepository;
@@ -17,7 +16,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -30,17 +28,17 @@ public class VoiceService {
     private final UserRepository userRepository;
     private final JWTUtil jwtUtil;
 
-    public ResponseEntity<?> saveAudioFile(TrainVoiceProcessDTO trainVoiceProcessDTO) throws IOException {
+    public ResponseEntity<?> saveAudioFile(TrainVoiceDTO trainVoiceDTO) throws IOException {
 
         // 파일 이름 설정 후 지정 폴더에 저장
-        MultipartFile multipartFile = trainVoiceProcessDTO.getVoiceFile(); // 파일 추출
+        MultipartFile multipartFile = trainVoiceDTO.getVoiceFile(); // 파일 추출
         String originalVoiceFileName = multipartFile.getOriginalFilename(); // 이름 추출
         String storedVoiceFileName = System.currentTimeMillis() + "_" + originalVoiceFileName; // 저장 이름 설정 (같은 이름으로 또 올릴 수도 있기 때문에 랜덤 이름 설정)
         String savePath = "C:\\Users\\RKB\\Desktop\\새 폴더\\" + storedVoiceFileName; // ***수정 // 저장 폴더 지정
         multipartFile.transferTo(new File(savePath)); // 저장
 
         // 사용자가 설정한 모델 이름 추출
-        String modelName = trainVoiceProcessDTO.getModelName();
+        String modelName = trainVoiceDTO.getModelName();
 
         // 파일 경로 디비 저장
         VoiceTempEntity voiceTempEntity = new VoiceTempEntity(originalVoiceFileName, storedVoiceFileName, savePath, modelName);

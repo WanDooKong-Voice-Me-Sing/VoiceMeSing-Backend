@@ -1,6 +1,6 @@
 package com.wandookong.voice_me_sing.controller;
 
-import com.wandookong.voice_me_sing.dto.TrainVoiceProcessDTO;
+import com.wandookong.voice_me_sing.dto.TrainVoiceDTO;
 import com.wandookong.voice_me_sing.service.VoiceService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -18,9 +18,9 @@ public class VoiceController {
     private final VoiceService voiceService;
 
     @PostMapping("/train-voice") // 1. FE->BE::사용자 음성 저장 2. BE->AI::AI 서버에 음성 **모델 생성** 요청
-    public ResponseEntity<?> uploadAudio(TrainVoiceProcessDTO trainVoiceProcessDTO) throws IOException { // *** IO
+    public ResponseEntity<?> uploadAudio(TrainVoiceDTO trainVoiceDTO) throws IOException { // *** IO
 
-        return voiceService.saveAudioFile(trainVoiceProcessDTO);
+        return voiceService.saveAudioFile(trainVoiceDTO);
     }
 
     @GetMapping("/collection-model") // **모델 리스트**

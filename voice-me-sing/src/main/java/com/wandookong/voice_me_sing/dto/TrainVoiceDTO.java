@@ -7,7 +7,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 @Getter @Setter
 @ToString
-public class TrainVoiceProcessDTO {
+public class TrainVoiceDTO {
     private String modelName; // 음성 모델 학습 후 이름 설정
     private MultipartFile voiceFile; // 음성 파일
 }
