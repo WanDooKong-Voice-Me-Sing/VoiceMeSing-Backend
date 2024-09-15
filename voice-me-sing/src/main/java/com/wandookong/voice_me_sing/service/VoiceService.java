@@ -34,7 +34,7 @@ public class VoiceService {
         MultipartFile multipartFile = trainVoiceDTO.getVoiceFile(); // 파일 추출
         String originalVoiceFileName = multipartFile.getOriginalFilename(); // 이름 추출
         String storedVoiceFileName = System.currentTimeMillis() + "_" + originalVoiceFileName; // 저장 이름 설정 (같은 이름으로 또 올릴 수도 있기 때문에 랜덤 이름 설정)
-        String savePath = "C:\\Users\\RKB\\Desktop\\새 폴더\\" + storedVoiceFileName; // ***수정 // 저장 폴더 지정
+        String savePath = "/app/file/" + storedVoiceFileName; // ***수정 // 저장 폴더 지정
         multipartFile.transferTo(new File(savePath)); // 저장
 
         // 사용자가 설정한 모델 이름 추출

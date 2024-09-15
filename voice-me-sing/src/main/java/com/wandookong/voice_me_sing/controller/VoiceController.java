@@ -11,7 +11,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -68,11 +67,10 @@ public class VoiceController {
     })
     @GetMapping("/collection-model") // **모델 리스트**
     public ResponseEntity<?> getVoiceModels(
-            @Parameter(description = "access token", required = true) @RequestHeader("access") String authHeader,
-            HttpServletRequest request) {
-        String userToken = request.getHeader("access");
+            @Parameter(description = "access token", required = true) @RequestHeader("access") String accessToken) {
+//        String userToken = request.getHeader("access");
 
-        return voiceService.getVoiceModels(userToken);
+        return voiceService.getVoiceModels(accessToken);
     }
 
 }
