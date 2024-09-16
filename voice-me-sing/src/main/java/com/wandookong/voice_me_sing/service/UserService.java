@@ -15,7 +15,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final JWTUtil jwtUtil;
 
-    public String getProfile(String accessToken) {
+    public String getNickname(String accessToken) {
 
         String email = jwtUtil.getEmail(accessToken);
 

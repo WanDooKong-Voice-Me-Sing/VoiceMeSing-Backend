@@ -1,7 +1,10 @@
 package com.wandookong.voice_me_sing.controller;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.wandookong.voice_me_sing.dto.CreateSongDTO;
 import com.wandookong.voice_me_sing.dto.ResponseDTO;
-import com.wandookong.voice_me_sing.service.UserService;
+import com.wandookong.voice_me_sing.service.SongService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -12,18 +15,20 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.io.IOException;
 import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
 @Tag(name = "", description = "")
-public class UserController {
+public class SongController {
 
-    private final UserService userService;
+    private final SongService songService;
 
     @Operation(
             summary = "",
@@ -50,22 +55,22 @@ public class UserController {
                     )
             )
     })
-    @GetMapping("/profile")
-    public ResponseEntity<?> getProfile(@Parameter(description = "access token", required = true)
-                                        @RequestHeader(value = "access", required = false) String accessToken) {
+    @PostMapping("/create-song")
+    public ResponseEntity<?> uploadCoverSong(
+            @Parameter(description = "", required = true)
+            @RequestHeader(value = "access", required = false) String accessToken,
+            CreateSongDTO createSongDTO) throws IOException {
 
-//        String accessToken = request.getHeader("access");
-//        String email = jwtUtil.getEmail(accessToken);
+        boolean success = songService.createCoverSong(createSongDTO, accessToken);
 
-        String nickname = userService.getNickname(accessToken);
+        ObjectMapper objectMapper = new ObjectMapper();
+        Map<String, Object> createSongDTOMap = objectMapper.convertValue(createSongDTO, new TypeReference<Map<String, Object>>() {});
+        ResponseDTO<Map<String, Object>> responseDTO = new ResponseDTO<>("success", "cover song uploaded", createSongDTOMap);
 
-        if (nickname == null) {
-            ResponseDTO<String> responseDTO = new ResponseDTO<>("fail", "no user found", null);
-            return ResponseEntity.status(401).body(responseDTO);
-        } else {
-            ResponseDTO<Map<String, Object>> responseDTO = new ResponseDTO<>("success", "get profile",
-                    Map.of("nickname", nickname));
-            return ResponseEntity.status(200).body(responseDTO);
+        if (success) {
+            return ResponseEntity.ok().body(responseDTO);
         }
+        return null;
     }
+
 }

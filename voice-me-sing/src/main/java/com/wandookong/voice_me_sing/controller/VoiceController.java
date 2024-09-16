@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -31,20 +32,35 @@ public class VoiceController {
                     "The uploaded file is processed, and a new voice model is created for the provided model name.\n" +
                     "음성 파일을 업로드하고 사용자가 지정한 모델 이름으로 음성 모델을 생성")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "File uploaded and voice model created successfully.\n파일이 업로드되었고 음성 모델이 성공적으로 생성",
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "File uploaded and voice model created successfully.\n파일이 업로드되었고 음성 모델이 성공적으로 생성",
                     content = @Content(
                             mediaType = "application/json",
                             schema = @Schema(implementation = ResponseDTO.class),
                             examples = @ExampleObject(value = "{\"status\":\"success\",\"message\":\"file upload success\",\"data\":" +
                                     "{\"voiceFileName\":\"file1.model\",\"modelName\":\"내 음성 모델1\"}}")
-                    ))
+                    )
+            )
     })
     @PostMapping("/train-voice") // 1. FE->BE::사용자 음성 저장 2. BE->AI::AI 서버에 음성 **모델 생성** 요청
-    public ResponseEntity<?> uploadAudio(@RequestPart(name = "modelName", required = true) String modelName,
-                                         @RequestPart(name = "voiceFile", required = true) MultipartFile voiceFile) throws IOException { // *** IO
-        TrainVoiceDTO trainVoiceDTO = new TrainVoiceDTO(modelName, voiceFile);
+    public ResponseEntity<?> uploadVoiceFile(
+            @RequestHeader("access") String accessToken,
+            @RequestPart(name = "modelName", required = true) String voiceModelName,
+            @RequestPart(name = "voiceFile", required = true) MultipartFile voiceFile) throws IOException { // *** IO
 
-        return voiceService.saveAudioFile(trainVoiceDTO);
+        TrainVoiceDTO trainVoiceDTO = new TrainVoiceDTO(voiceModelName, voiceFile);
+        boolean success = voiceService.saveVoiceFile(trainVoiceDTO, accessToken);
+
+        // 저장 결과 리턴
+        if (success) {
+            ResponseDTO<Map<String, String>> responseDTO = new ResponseDTO<>("success", "file uploaded", Map.of(
+                    "voiceFileName", voiceFile.getOriginalFilename(),
+                    "modelName", voiceModelName
+            ));
+            return ResponseEntity.ok().body(responseDTO);
+        }
+        else return null;
     }
 
     @Operation(
@@ -66,11 +82,12 @@ public class VoiceController {
                     ))
     })
     @GetMapping("/collection-model") // **모델 리스트**
-    public ResponseEntity<?> getVoiceModels(
-            @Parameter(description = "access token", required = true) @RequestHeader("access") String accessToken) {
-//        String userToken = request.getHeader("access");
+    public ResponseEntity<?> getVoiceModels( // *** 분리하기
+            @Parameter(description = "access token", required = true)
+            @RequestHeader("access") String accessToken) {
 
         return voiceService.getVoiceModels(accessToken);
+
     }
 
 }

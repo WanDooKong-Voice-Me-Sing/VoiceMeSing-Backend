@@ -37,16 +37,23 @@ public class ReissueController {
             summary = "Reissue access and refresh tokens\naccess 토큰과 refresh 토큰 재발급",
             description = "Reissue access and refresh tokens if a valid refresh token is provided.\n유효한 refresh 토큰이 제공되면 access 토큰과 refresh 토큰을 재발급")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200",
+            @ApiResponse(
+                    responseCode = "200",
                     description = "Access and refresh tokens reissued\naccess 토큰과 refresh 토큰 재발급",
-                    content = @Content(mediaType = "application/json",
+                    content = @Content(
+                            mediaType = "application/json",
                             schema = @Schema(implementation = ResponseDTO.class),
-                            examples = @ExampleObject(value = "{\"status\":\"success\",\"message\":\"access and refresh tokens reissued\",\"data\":null}"))), // ***
-            @ApiResponse(responseCode = "400", description = "Invalid refresh token\n유효하지 않은 refresh 토큰",
-                    content = @Content(mediaType = "application/json",
+                            examples = @ExampleObject(value = "{\"status\":\"success\",\"message\":\"access and refresh tokens reissued\",\"data\":null}")
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "400", description = "Invalid refresh token\n유효하지 않은 refresh 토큰",
+                    content = @Content(
+                            mediaType = "application/json",
                             schema = @Schema(implementation = ResponseDTO.class),
-                            examples = @ExampleObject(value = "{\"status\":\"fail\",\"message\":\"invalid refresh token\",\"data\":null}"))) // ***
-
+                            examples = @ExampleObject(value = "{\"status\":\"fail\",\"message\":\"invalid refresh token\",\"data\":null}")
+                    )
+            )
     })
     @PostMapping("/reissue")
     public ResponseEntity<?> reissue(@Parameter(description = "refresh token", required = true)
