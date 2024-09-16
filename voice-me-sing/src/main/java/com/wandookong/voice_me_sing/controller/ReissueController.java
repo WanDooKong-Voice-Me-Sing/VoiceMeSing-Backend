@@ -11,16 +11,13 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import org.apache.coyote.Response;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Map;
@@ -56,20 +53,19 @@ public class ReissueController {
             )
     })
     @PostMapping("/reissue")
-    public ResponseEntity<?> reissue(@Parameter(description = "refresh token", required = true)
-                                         @RequestHeader(value = "refresh", required = false) String authHeader, HttpServletRequest request, HttpServletResponse response) {
-        String refreshToken = null;
-        Cookie[] cookies = request.getCookies();
-
-        // get refresh token
-        for (Cookie cookie : cookies) {
-            if (cookie.getName().equals("refresh")) {
-                refreshToken = cookie.getValue();
-                break;
-            }
-        }
-
-        System.out.println("refreshToken = " + refreshToken);
+    public ResponseEntity<?> reissue(@Parameter(description = "Refresh token for authentication\n인증을 위한 refresh 토큰", required = true)
+                                         @CookieValue(value = "refresh") String refreshToken, HttpServletRequest request, HttpServletResponse response) {
+//        String refreshToken = null;
+//        Cookie[] cookies = request.getCookies();
+//
+//        // get refresh token
+//        for (Cookie cookie : cookies) {
+//            if (cookie.getName().equals("refresh")) {
+//                refreshToken = cookie.getValue();
+//                break;
+//            }
+//        }
+//        System.out.println("refreshToken = " + refreshToken);
 
         Map<String, String> result = reissueService.reissueAccessRefresh(refreshToken);
         String newRefreshToken = result.get("newRefreshToken");

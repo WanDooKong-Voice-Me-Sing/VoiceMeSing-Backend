@@ -38,14 +38,16 @@ public class SignupController {
                             mediaType = "application/json",
                             schema = @Schema(implementation = ResponseDTO.class),
                             examples = @ExampleObject(value = "{\"status\":\"fail\",\"message\":\"signup fail\",\"data\":null}")
-                    )),
+                    )
+            ),
             @ApiResponse(responseCode = "200", description = "User successfully signed up\n사용자가 성공적으로 가입",
                     content = @Content(
                             mediaType = "application/json",
                             schema = @Schema(implementation = ResponseDTO.class),
                             examples = @ExampleObject(value = "{\"status\":\"success\",\"message\":\"signup success\",\"data\":" +
-                                    "{\"email\":\"이메일\",\"password\":\"비밀번호\",\"nickname\":\"닉네임\"}}")
-                    ))
+                                    "{\"email\":\"user@example.com\",\"nickname\":\"wandookong123\"}}")
+                    )
+            )
     })
     @PostMapping("/signup")
     public ResponseEntity<?> signupProcess(@RequestBody SignupDTO signupDTO) {
@@ -54,8 +56,8 @@ public class SignupController {
         boolean signupSuccess = signupService.signup(signupDTO);
 
         ObjectMapper objectMapper = new ObjectMapper();
-        Map<String, Object> map = objectMapper.convertValue(signupDTO, new TypeReference<Map<String, Object>>() {
-        });
+        Map<String, Object> map = objectMapper.convertValue(signupDTO, new TypeReference<Map<String, Object>>() {});
+        map.remove("password");
         ResponseDTO<Map<String, Object>> success = new ResponseDTO<>("success", "signup success", map);
         ResponseDTO<Map<String, Object>> fail = new ResponseDTO<>("fail", "signup fail", null);
 

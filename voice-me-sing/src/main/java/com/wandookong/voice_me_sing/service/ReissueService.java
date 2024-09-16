@@ -6,8 +6,6 @@ import com.wandookong.voice_me_sing.oauth2.CookieUtil;
 import com.wandookong.voice_me_sing.repository.RefreshTokenRepository;
 import io.jsonwebtoken.ExpiredJwtException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;

@@ -20,29 +20,29 @@ import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
-@Tag(name = "", description = "")
+@Tag(name = "User API", description = "Operations related to user\n사용자 관련 작업")
 public class UserController {
 
     private final UserService userService;
 
     @Operation(
-            summary = "",
-            description = ""
+            summary = "Get user profile\n사용자 프로필 조회",
+            description = "Retrieves the user's profile information based on the access token.\n액세스 토큰을 기반으로 사용자의 프로필 정보 조회"
     )
     @ApiResponses(value = {
             @ApiResponse(
                     responseCode = "200",
-                    description = "",
+                    description = "Successfully retrieved user profile\n사용자 프로필 성공적으로 조회",
                     content = @Content(
                             mediaType = "application/json",
                             schema = @Schema(implementation = ResponseDTO.class),
                             examples = @ExampleObject("{\"status\":\"success\",\"message\":\"get profile\",\"data\":{" +
-                                    "\"nickname\":\"exampleNickname123\"}}")
+                                    "\"nickname\":\"wandookong123\"}}")
                     )
             ),
             @ApiResponse(
                     responseCode = "401",
-                    description = "",
+                    description = "No user found\n사용자를 찾을 수 없음",
                     content = @Content(
                             mediaType = "application/json",
                             schema = @Schema(implementation = ResponseDTO.class),
@@ -51,8 +51,8 @@ public class UserController {
             )
     })
     @GetMapping("/profile")
-    public ResponseEntity<?> getProfile(@Parameter(description = "access token", required = true)
-                                        @RequestHeader(value = "access", required = false) String accessToken) {
+    public ResponseEntity<?> getProfile(@Parameter(description = "Access token for authentication\n인증을 위한 access 토큰", required = true)
+                                        @RequestHeader(value = "access") String accessToken) {
 
 //        String accessToken = request.getHeader("access");
 //        String email = jwtUtil.getEmail(accessToken);
