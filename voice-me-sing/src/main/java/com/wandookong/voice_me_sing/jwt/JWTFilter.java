@@ -16,7 +16,6 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.Arrays;
 
 @RequiredArgsConstructor
 public class JWTFilter extends OncePerRequestFilter {
@@ -29,7 +28,7 @@ public class JWTFilter extends OncePerRequestFilter {
         String accessToken = null;
         Cookie[] cookies = request.getCookies();
 
-        System.out.println("cookies = " + Arrays.toString(cookies));
+//        System.out.println("cookies = " + Arrays.toString(cookies));
 
         // 쿠키와 헤더 사용에 따른 분리
         // case 0: 쿠키 존재
@@ -46,17 +45,17 @@ public class JWTFilter extends OncePerRequestFilter {
             accessToken = request.getHeader("access");
         }
 
-        System.out.println("accessToken = " + accessToken);
+//        System.out.println("accessToken = " + accessToken);
 
         // accessToken null 확인
         if (accessToken == null) {
-            System.out.println("access token null");
+//            System.out.println("access token null");
             filterChain.doFilter(request, response);
 
             return;
         }
 
-        System.out.println("authorization begin");
+//        System.out.println("authorization begin");
 
         // accessToken 만료 확인
         try {
@@ -82,7 +81,7 @@ public class JWTFilter extends OncePerRequestFilter {
             return;
         }
 
-        System.out.println("authorization done");
+//        System.out.println("authorization done");
 
         String email = jwtUtil.getEmail(accessToken);
         String role = jwtUtil.getRole(accessToken);

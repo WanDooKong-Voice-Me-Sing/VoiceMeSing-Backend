@@ -12,8 +12,7 @@ import java.util.List;
 public class UserEntity {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "user_id")
-    private Long id;
+    private Long userId;
 
 //    @Column(unique = true, nullable = false)
 //    private String username;
@@ -32,5 +31,7 @@ public class UserEntity {
 
     @OneToMany(mappedBy = "userEntity", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<VoiceModelEntity> voiceModels;
+
+    // coverSongsList
 
 }

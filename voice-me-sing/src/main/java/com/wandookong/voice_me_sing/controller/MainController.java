@@ -15,9 +15,15 @@ import org.springframework.web.bind.annotation.RestController;
 public class MainController {
 
     @GetMapping("/")
-    @ApiResponse(responseCode = "200", description = "main page successfully loaded\n메인 페이지 로드",
-            content = @Content(schema = @Schema(implementation = ResponseDTO.class),
-            examples = @ExampleObject(value = "{\"status\":\"success\",\"message\":\"main page\",\"data\":null}")))
+    @ApiResponse(
+            responseCode = "200",
+            description = "main page successfully loaded\n메인 페이지 로드",
+            content = @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = ResponseDTO.class),
+                    examples = @ExampleObject(value = "{\"status\":\"success\",\"message\":\"main page\",\"data\":null}")
+            )
+    )
     public ResponseEntity<?> mainProcess() {
 //        String username = SecurityContextHolder.getContext().getAuthentication().getName();
 

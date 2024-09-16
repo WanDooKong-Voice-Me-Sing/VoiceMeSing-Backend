@@ -11,18 +11,17 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class VoiceTempEntity {
 
-    public VoiceTempEntity(String originalVoiceFileName, String storedVoiceFileName, String voiceFilePath, String modelName) {
+    public VoiceTempEntity(String originalVoiceFileName, String storedVoiceFileName, String voiceFilePath) {
         this.originalVoiceFileName = originalVoiceFileName;
         this.storedVoiceFileName = storedVoiceFileName;
         this.voiceFilePath = voiceFilePath;
-        this.modelName = modelName;
     }
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long voiceId;
 
     private String originalVoiceFileName;
     private String storedVoiceFileName;
     private String voiceFilePath;
-    private String modelName;
+//    private String modelName;
 }

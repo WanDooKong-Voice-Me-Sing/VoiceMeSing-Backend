@@ -10,9 +10,9 @@ import lombok.Setter;
 @AllArgsConstructor
 public class VoiceModelDTO {
 
-    @Schema(description = "음성 모델의 식별자", example = "1")
+    @Schema(description = "음성 모델의 식별자", example = "12")
     private Long voiceModelId;
 
-    @Schema(description = "음성 모델의 이름", example = "myVoiceModel")
+    @Schema(description = "음성 모델의 이름", example = "My Voice Model")
     private String voiceModelName;
 }

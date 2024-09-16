@@ -15,6 +15,6 @@ public class SignupDTO {
     @Schema(description = "사용자의 비밀번호", example = "password1234")
     String password;
 
-    @Schema(description = "사용자의 닉네임", example = "닉네임")
+    @Schema(description = "사용자의 닉네임", example = "wandookong123")
     String nickname;
 }

@@ -12,8 +12,7 @@ import lombok.ToString;
 public class RefreshTokenEntity {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "token_id")
-    private Long id;
+    private Long refreshTokenId;
 
     private String email;
     private String refreshToken;
