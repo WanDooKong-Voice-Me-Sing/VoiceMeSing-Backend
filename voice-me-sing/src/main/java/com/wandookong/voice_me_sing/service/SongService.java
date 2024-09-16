@@ -8,9 +8,11 @@ import com.wandookong.voice_me_sing.jwt.JWTUtil;
 import com.wandookong.voice_me_sing.repository.SongTempRepository;
 import com.wandookong.voice_me_sing.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.xml.xpath.XPath;
 import java.io.File;
 import java.io.IOException;
 import java.util.Optional;
@@ -24,12 +26,15 @@ public class SongService {
     private final JWTUtil jwtUtil;
     private final UserRepository userRepository;
 
+    @Value("${spring.savePath}")
+    private String path;
+
     public boolean createCoverSong(CreateSongDTO createSongDTO, String accessToken) throws IOException {
         // 1. 음원 파일 이름 설정 후 지정 폴더에 저장 (temp)
         MultipartFile multipartFile = createSongDTO.getSongFile(); // 파일 추출
         String originalSongFileName = multipartFile.getOriginalFilename(); // 이름 추출
         String storedSongFileName = System.currentTimeMillis() + "_" +originalSongFileName; // 저장 이름 설정
-        String savePath = "C:\\Users\\RKB\\Desktop\\새 폴더\\" + storedSongFileName; // *** // 저장 폴더 지정
+        String savePath = path + storedSongFileName; // 저장 폴더 지정
         multipartFile.transferTo(new File(savePath)); // 저장
 
         // 2. 파일 디비 임시 저장

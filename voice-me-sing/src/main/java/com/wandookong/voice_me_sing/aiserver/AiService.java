@@ -1,6 +1,7 @@
 package com.wandookong.voice_me_sing.aiserver;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -10,9 +11,10 @@ public class AiService {
 
     private final RestTemplate restTemplate;
 
-    public boolean toPythonVoiceModel(Long userId, Long voiceId, String voiceModelName) {
+    @Value("${spring.pythonServerUrl}")
+    private String pythonServerUrl;
 
-        String pythonServerUrl = "http://219.254.44.166:8001/get_voice"; // ***
+    public boolean toPythonVoiceModel(Long userId, Long voiceId, String voiceModelName) {
 
         VoiceModelRequestDTO voiceModelRequestDTO = new VoiceModelRequestDTO(userId, voiceId, voiceModelName);
 
@@ -25,8 +27,6 @@ public class AiService {
     }
 
     public boolean toPythonCoverSong(Long userId, Long songId, Long voiceModelId) {
-
-        String pythonServerUrl = "http://219.254.44.166:8001/get_voice"; // ***
 
         CoverSongRequestDTO coverSongRequestDTO = new CoverSongRequestDTO(songId, userId, voiceModelId);
 

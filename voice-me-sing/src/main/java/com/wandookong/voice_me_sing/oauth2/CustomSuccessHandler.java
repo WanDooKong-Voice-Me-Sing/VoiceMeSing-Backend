@@ -6,6 +6,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
@@ -21,6 +22,9 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 
     private final JWTUtil jwtUtil;
     private final CookieUtil cookieUtil;
+
+    @Value("${spring.frontEndServerUrl}")
+    private String frontEndServerUrl;
 
     // 로그인 성공
     @Override
@@ -43,7 +47,7 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         response.addCookie(cookieUtil.createCookie("access", access)); // ?
         response.addCookie(cookieUtil.createCookie("refresh", refresh));
         response.setStatus(HttpServletResponse.SC_OK);
-        response.sendRedirect("https://localhost:3000/"); // 수정***
+        response.sendRedirect(frontEndServerUrl);
     }
 
 }

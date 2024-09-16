@@ -10,6 +10,7 @@ import com.wandookong.voice_me_sing.jwt.JWTUtil;
 import com.wandookong.voice_me_sing.repository.UserRepository;
 import com.wandookong.voice_me_sing.repository.VoiceTempRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -29,13 +30,16 @@ public class VoiceService {
     private final JWTUtil jwtUtil;
     private final AiService aiService;
 
+    @Value("${spring.savePath}")
+    private String path;
+
     public boolean saveVoiceFile(TrainVoiceDTO trainVoiceDTO, String accessToken) throws IOException {
 
         // 1. 파일 이름 설정 후 지정 폴더에 저장 (temp)
         MultipartFile multipartFile = trainVoiceDTO.getVoiceFile(); // 파일 추출
         String originalVoiceFileName = multipartFile.getOriginalFilename(); // 이름 추출
         String storedVoiceFileName = System.currentTimeMillis() + "_" + originalVoiceFileName; // 저장 이름 설정 (같은 이름으로 또 올릴 수도 있기 때문에 랜덤 이름 설정)
-        String savePath = "C:\\Users\\RKB\\Desktop\\새 폴더\\" + storedVoiceFileName; // *** // 저장 폴더 지정
+        String savePath = path + storedVoiceFileName; // 저장 폴더 지정
         multipartFile.transferTo(new File(savePath)); // 저장
 
         // 2. 파일 디비 임시 저장
