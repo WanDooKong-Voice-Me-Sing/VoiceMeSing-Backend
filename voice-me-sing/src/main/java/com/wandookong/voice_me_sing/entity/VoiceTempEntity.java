@@ -19,7 +19,7 @@ public class VoiceTempEntity {
     }
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long voiceId;
 
     private String originalVoiceFileName;
     private String storedVoiceFileName;
