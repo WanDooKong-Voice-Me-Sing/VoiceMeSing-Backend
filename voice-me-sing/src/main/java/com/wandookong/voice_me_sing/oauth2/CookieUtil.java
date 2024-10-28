@@ -9,11 +9,11 @@ public class CookieUtil {
     public Cookie createCookie(String key, String value) {
         Cookie cookie = new Cookie(key, value);
 
-//        if (key.equals("access")) cookie.setPath("/");
-//        else if (key.equals("refresh")) cookie.setPath("/reissue");
+        if (key.equals("access")) cookie.setHttpOnly(false);
+        else if (key.equals("refresh")) cookie.setHttpOnly(true);
 
         cookie.setPath("/");
-        cookie.setHttpOnly(false);
+//        cookie.setHttpOnly(false);
         cookie.setMaxAge(60*60*60);
         cookie.setSecure(true);
         cookie.setAttribute("SameSite", "None");
