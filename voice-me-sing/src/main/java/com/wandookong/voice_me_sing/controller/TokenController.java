@@ -13,8 +13,14 @@ import org.springframework.web.bind.annotation.PostMapping;
 public class TokenController {
 
     @PostMapping("/refresh")
-    public boolean checkRefreshToken(@CookieValue(value = "refresh", required = false) String refreshToken) {
-        return refreshToken != null;
+    public ResponseEntity<?> checkRefreshToken(@CookieValue(value = "refresh", required = false) String refreshToken) {
+        if (refreshToken != null) {
+            // 성공적으로 refresh token이 존재할 경우
+            return ResponseEntity.ok(new ResponseDTO<>("success", "Refresh token exists", true));
+        } else {
+            // refresh token이 없을 경우
+            return ResponseEntity.ok(new ResponseDTO<>("success", "No valid refresh token", false));
+        }
     }
 
     @PostMapping("/token-reformat")
