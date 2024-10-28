@@ -86,9 +86,4 @@ public class ReissueController {
         }
 
     }
-
-    @PostMapping("/refresh")
-    public boolean checkRefreshToken(@CookieValue(value = "refresh", required = false) String refreshToken) {
-        return refreshToken != null;
-    }
 }
