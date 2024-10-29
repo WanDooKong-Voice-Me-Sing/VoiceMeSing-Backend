@@ -23,8 +23,7 @@ public class UserService {
         if (optionalUserEntity.isPresent()) {
             UserEntity userEntity = optionalUserEntity.get();
             return userEntity.getNickname();
-        }
-        else {
+        } else {
             return null;
         }
     }

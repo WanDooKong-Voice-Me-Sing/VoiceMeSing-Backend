@@ -5,7 +5,6 @@ import com.wandookong.voice_me_sing.entity.UserEntity;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -26,11 +25,14 @@ public class JWTFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 
         String accessToken = null;
-        Cookie[] cookies = request.getCookies();
+        accessToken = request.getHeader("access");
+
+        // 쿠키와 헤더 사용에 따른 분리 -> token-reformat 사용으로 삭제
+        /*Cookie[] cookies = request.getCookies();
 
 //        System.out.println("cookies = " + Arrays.toString(cookies));
 
-        // 쿠키와 헤더 사용에 따른 분리
+
         // case 0: 쿠키 존재
         if (cookies != null) {
             for (Cookie cookie : cookies) {
@@ -43,7 +45,7 @@ public class JWTFilter extends OncePerRequestFilter {
         // case 1: 쿠키 존재 X
         if (accessToken == null) {
             accessToken = request.getHeader("access");
-        }
+        }*/
 
 //        System.out.println("accessToken = " + accessToken);
 
@@ -61,7 +63,6 @@ public class JWTFilter extends OncePerRequestFilter {
         try {
             jwtUtil.isExpired(accessToken);
         } catch (ExpiredJwtException e) {
-
             PrintWriter writer = response.getWriter();
             writer.print("access token expired");
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
@@ -73,7 +74,6 @@ public class JWTFilter extends OncePerRequestFilter {
         String category = jwtUtil.getCategory(accessToken);
 
         if (!category.equals("access")) {
-
             PrintWriter writer = response.getWriter();
             writer.print("invalid access token");
             response.setStatus(HttpServletResponse.SC_FORBIDDEN);
@@ -83,6 +83,7 @@ public class JWTFilter extends OncePerRequestFilter {
 
 //        System.out.println("authorization done");
 
+        // 검증 완료, 일시적인 session 생성
         String email = jwtUtil.getEmail(accessToken);
         String role = jwtUtil.getRole(accessToken);
 

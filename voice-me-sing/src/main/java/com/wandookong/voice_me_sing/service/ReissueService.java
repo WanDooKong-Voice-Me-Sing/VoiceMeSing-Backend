@@ -2,8 +2,8 @@ package com.wandookong.voice_me_sing.service;
 
 import com.wandookong.voice_me_sing.entity.RefreshTokenEntity;
 import com.wandookong.voice_me_sing.jwt.JWTUtil;
-import com.wandookong.voice_me_sing.oauth2.CookieUtil;
 import com.wandookong.voice_me_sing.repository.RefreshTokenRepository;
+import com.wandookong.voice_me_sing.util.CookieUtil;
 import io.jsonwebtoken.ExpiredJwtException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

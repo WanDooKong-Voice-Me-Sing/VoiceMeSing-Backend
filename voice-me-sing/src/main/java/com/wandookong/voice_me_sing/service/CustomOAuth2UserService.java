@@ -30,8 +30,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         OAuth2Response oAuth2Response = null;
         if (registrationId.equals("naver")) {
             oAuth2Response = new NaverResponse(oAuth2User.getAttributes());
-        }
-        else if (registrationId.equals("kakao")) {
+        } else if (registrationId.equals("kakao")) {
             oAuth2Response = new KakaoResponse(oAuth2User.getAttributes());
         }
 
@@ -61,8 +60,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
             userDTO.setRole(userEntity.getRole());
 
             return new CustomOAuth2User(userDTO);
-        }
-        else { // 존재 X, 저장
+        } else { // 존재 X, 저장
             // 회원 정보 저장
             UserEntity userEntity = new UserEntity();
 

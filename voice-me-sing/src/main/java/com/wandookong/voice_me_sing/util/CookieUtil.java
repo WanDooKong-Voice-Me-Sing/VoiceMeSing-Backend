@@ -1,4 +1,4 @@
-package com.wandookong.voice_me_sing.oauth2;
+package com.wandookong.voice_me_sing.util;
 
 import jakarta.servlet.http.Cookie;
 import org.springframework.stereotype.Component;
@@ -14,11 +14,22 @@ public class CookieUtil {
 
         cookie.setPath("/");
 //        cookie.setHttpOnly(false);
-        cookie.setMaxAge(60*60*60);
+        cookie.setMaxAge(60 * 60 * 60);
         cookie.setSecure(true);
         cookie.setAttribute("SameSite", "None");
 
         System.out.println(key + " cookie created");
+
+        return cookie;
+    }
+
+    public Cookie createExpiredCookie(String key) {
+        Cookie cookie = new Cookie(key, null);
+
+        cookie.setMaxAge(0);
+        cookie.setPath("/");
+        cookie.setSecure(true);
+        cookie.setAttribute("SameSite", "None");
 
         return cookie;
     }

@@ -43,7 +43,8 @@ public class VoiceController {
                     )
             )
     })
-    @PostMapping(value = "/train-voice", consumes = "multipart/form-data") // 1. FE->BE::사용자 음성 저장 2. BE->AI::AI 서버에 음성 **모델 생성** 요청
+    @PostMapping(value = "/train-voice", consumes = "multipart/form-data")
+    // 1. FE->BE::사용자 음성 저장 2. BE->AI::AI 서버에 음성 **모델 생성** 요청
     public ResponseEntity<?> uploadVoiceFile(
             @RequestHeader("access") String accessToken,
             @RequestPart(name = "voiceModelName") String voiceModelName,
@@ -59,8 +60,7 @@ public class VoiceController {
                     "modelName", voiceModelName
             ));
             return ResponseEntity.ok().body(responseDTO);
-        }
-        else return null;
+        } else return null;
     }
 
     @Operation(
@@ -85,8 +85,8 @@ public class VoiceController {
     })
     @GetMapping("/collection-model") // 음성 모델 리스트 조회
     public ResponseEntity<?> getVoiceModels( // *** 분리하기
-            @Parameter(description = "Access token for authentication\n인증을 위한 access 토큰", required = true)
-            @RequestHeader(value = "access") String accessToken) {
+                                             @Parameter(description = "Access token for authentication\n인증을 위한 access 토큰", required = true)
+                                             @RequestHeader(value = "access") String accessToken) {
 
         return voiceService.getVoiceModels(accessToken);
 

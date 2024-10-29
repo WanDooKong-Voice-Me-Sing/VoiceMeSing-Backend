@@ -1,8 +1,8 @@
 package com.wandookong.voice_me_sing.controller;
 
 import com.wandookong.voice_me_sing.dto.ResponseDTO;
-import com.wandookong.voice_me_sing.oauth2.CookieUtil;
 import com.wandookong.voice_me_sing.service.ReissueService;
+import com.wandookong.voice_me_sing.util.CookieUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -54,7 +54,7 @@ public class ReissueController {
     })
     @PostMapping("/reissue")
     public ResponseEntity<?> reissue(@Parameter(description = "Refresh token for authentication\n인증을 위한 refresh 토큰", required = true)
-                                         @CookieValue(value = "refresh") String refreshToken, HttpServletRequest request, HttpServletResponse response) {
+                                     @CookieValue(value = "refresh") String refreshToken, HttpServletRequest request, HttpServletResponse response) {
 //        String refreshToken = null;
 //        Cookie[] cookies = request.getCookies();
 //
@@ -75,8 +75,7 @@ public class ReissueController {
             ResponseDTO<String> responseDTO = new ResponseDTO<>("fail", result.get("message"), null);
 
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseDTO);
-        }
-        else {
+        } else {
             response.addCookie(cookieUtil.createCookie("refresh", newRefreshToken));
             response.setHeader("access", newAccessToken);
 

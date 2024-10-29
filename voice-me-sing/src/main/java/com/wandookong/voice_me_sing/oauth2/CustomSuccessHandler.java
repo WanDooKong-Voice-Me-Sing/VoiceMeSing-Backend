@@ -4,6 +4,7 @@ import com.wandookong.voice_me_sing.dto.oauth2.CustomOAuth2User;
 import com.wandookong.voice_me_sing.entity.RefreshTokenEntity;
 import com.wandookong.voice_me_sing.jwt.JWTUtil;
 import com.wandookong.voice_me_sing.repository.RefreshTokenRepository;
+import com.wandookong.voice_me_sing.util.CookieUtil;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -47,16 +48,15 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         String access = jwtUtil.createJwt("access", email, role, 600000L); // 10분
         String refresh = jwtUtil.createJwt("refresh", email, role, 86400000L); // 24시간
 
-        addRefreshEntity(email, refresh);
+        saveRefreshToken(email, refresh);
 
-//        response.addHeader("access", access);
-        response.addCookie(cookieUtil.createCookie("access", access)); // ?
+        response.addCookie(cookieUtil.createCookie("access", access)); // 후에 token-reformat 으로 헤더로 재전송
         response.addCookie(cookieUtil.createCookie("refresh", refresh));
         response.setStatus(HttpServletResponse.SC_OK);
         response.sendRedirect(frontEndServerUrl);
     }
 
-    private void addRefreshEntity(String email, String refresh) {
+    private void saveRefreshToken(String email, String refresh) {
 
         Date date = new Date(System.currentTimeMillis() + 86400000L); // 24시간
 
