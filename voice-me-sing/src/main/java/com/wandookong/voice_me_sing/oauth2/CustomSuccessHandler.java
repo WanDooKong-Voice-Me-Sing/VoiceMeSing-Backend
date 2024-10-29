@@ -58,14 +58,18 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 
     private void saveRefreshToken(String email, String refresh) {
 
-        Date date = new Date(System.currentTimeMillis() + 86400000L); // 24시간
+        Date expirationDate = new Date(System.currentTimeMillis() + 86400000L); // 24시간
 
         RefreshTokenEntity refreshEntity = new RefreshTokenEntity();
         refreshEntity.setEmail(email);
         refreshEntity.setRefreshToken(refresh);
-        refreshEntity.setExpiration(date.toString());
+        refreshEntity.setExpiration(expirationDate);
 
         refreshTokenRepository.save(refreshEntity);
+
+        // expiration 이 지난 토큰은 삭제
+        Date currentDate = new Date();
+        refreshTokenRepository.deleteByExpirationBefore(currentDate);
     }
 
 }
