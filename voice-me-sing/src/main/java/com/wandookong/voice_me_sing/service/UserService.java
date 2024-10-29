@@ -27,4 +27,15 @@ public class UserService {
             return null;
         }
     }
+
+    public boolean deleteAccount(String accessToken) {
+
+        String email = jwtUtil.getEmail(accessToken);
+        Optional<UserEntity> optionalUserEntity = userRepository.findByEmail(email);
+        if (optionalUserEntity.isPresent()) {
+            userRepository.delete(optionalUserEntity.get());
+            return true;
+        }
+        return false;
+    }
 }
