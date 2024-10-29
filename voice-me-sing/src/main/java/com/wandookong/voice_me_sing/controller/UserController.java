@@ -11,7 +11,9 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
@@ -66,6 +68,19 @@ public class UserController {
             ResponseDTO<Map<String, Object>> responseDTO = new ResponseDTO<>("success", "get profile",
                     Map.of("nickname", nickname));
             return ResponseEntity.status(200).body(responseDTO);
+        }
+    }
+
+    @DeleteMapping("/account-delete")
+    public ResponseEntity<?> deleteAccount(@RequestHeader(value = "access") String accessToken) {
+        boolean deleted = userService.deleteAccount(accessToken);
+
+        if (deleted) {
+            ResponseDTO<String> responseDTO = new ResponseDTO<>("success", "account deleted", null);
+            return ResponseEntity.status(HttpStatus.OK).body(responseDTO);
+        } else {
+            ResponseDTO<String> responseDTO = new ResponseDTO<>("fail", "account not found", null);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(responseDTO);
         }
     }
 }
