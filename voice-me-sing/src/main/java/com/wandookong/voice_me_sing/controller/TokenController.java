@@ -41,6 +41,7 @@ public class TokenController {
             cookie.setPath("/");
             cookie.setSecure(true);
             cookie.setAttribute("SameSite", "None");
+            response.addCookie(cookie);
 
             ResponseDTO<String> responseDTO = new ResponseDTO<>("success", "access token in the header", null);
 

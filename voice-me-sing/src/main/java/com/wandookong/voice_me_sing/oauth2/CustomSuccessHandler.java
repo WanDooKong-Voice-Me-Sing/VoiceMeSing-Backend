@@ -1,7 +1,9 @@
 package com.wandookong.voice_me_sing.oauth2;
 
 import com.wandookong.voice_me_sing.dto.oauth2.CustomOAuth2User;
+import com.wandookong.voice_me_sing.entity.RefreshTokenEntity;
 import com.wandookong.voice_me_sing.jwt.JWTUtil;
+import com.wandookong.voice_me_sing.repository.RefreshTokenRepository;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -14,6 +16,7 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.Date;
 import java.util.Iterator;
 
 @Component
@@ -22,6 +25,7 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 
     private final JWTUtil jwtUtil;
     private final CookieUtil cookieUtil;
+    private final RefreshTokenRepository refreshTokenRepository;
 
     @Value("${spring.frontEndServerUrl}")
     private String frontEndServerUrl;
@@ -43,11 +47,25 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         String access = jwtUtil.createJwt("access", email, role, 600000L); // 10분
         String refresh = jwtUtil.createJwt("refresh", email, role, 86400000L); // 24시간
 
+        addRefreshEntity(email, refresh);
+
 //        response.addHeader("access", access);
         response.addCookie(cookieUtil.createCookie("access", access)); // ?
         response.addCookie(cookieUtil.createCookie("refresh", refresh));
         response.setStatus(HttpServletResponse.SC_OK);
         response.sendRedirect(frontEndServerUrl);
+    }
+
+    private void addRefreshEntity(String email, String refresh) {
+
+        Date date = new Date(System.currentTimeMillis() + 86400000L); // 24시간
+
+        RefreshTokenEntity refreshEntity = new RefreshTokenEntity();
+        refreshEntity.setEmail(email);
+        refreshEntity.setRefreshToken(refresh);
+        refreshEntity.setExpiration(date.toString());
+
+        refreshTokenRepository.save(refreshEntity);
     }
 
 }
