@@ -4,10 +4,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wandookong.voice_me_sing.dto.CustomUserDetails;
 import com.wandookong.voice_me_sing.dto.LoginDTO;
 import com.wandookong.voice_me_sing.dto.ResponseDTO;
-import com.wandookong.voice_me_sing.entity.RefreshTokenEntity;
 import com.wandookong.voice_me_sing.repository.RefreshTokenRepository;
 import com.wandookong.voice_me_sing.repository.UserRepository;
 import com.wandookong.voice_me_sing.util.CookieUtil;
+import com.wandookong.voice_me_sing.util.TokenUtil;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletInputStream;
 import jakarta.servlet.http.HttpServletRequest;
@@ -25,7 +25,6 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
 import java.util.Collection;
-import java.util.Date;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -37,6 +36,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
     private final RefreshTokenRepository refreshTokenRepository;
     private final CookieUtil cookieUtil;
     private final UserRepository userRepository;
+    private final TokenUtil tokenUtil;
 
     // 로그인 로직 (검증)
     @Override
@@ -85,7 +85,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         String refresh = jwtUtil.createJwt("refresh", email, role, 86400000L); // 24시간
 
         // refresh 토큰 DB 저장
-        addRefreshEntity(email, refresh); // 24시간
+        tokenUtil.saveRefreshToken(email, refresh); // 24시간
 
         // 응답 설정
 //        response.addHeader("Authorization", "Bearer " + token);
@@ -129,17 +129,5 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         ObjectMapper objectMapper = new ObjectMapper();
         writer.write(objectMapper.writeValueAsString(responseDTO));
         writer.flush();
-    }
-
-    private void addRefreshEntity(String email, String refresh) {
-
-        Date date = new Date(System.currentTimeMillis() + 86400000L); // 24시간
-
-        RefreshTokenEntity refreshEntity = new RefreshTokenEntity();
-        refreshEntity.setEmail(email);
-        refreshEntity.setRefreshToken(refresh);
-        refreshEntity.setExpiration(date.toString());
-
-        refreshTokenRepository.save(refreshEntity);
     }
 }
