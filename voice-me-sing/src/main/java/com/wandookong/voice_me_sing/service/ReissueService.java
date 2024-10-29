@@ -1,14 +1,12 @@
 package com.wandookong.voice_me_sing.service;
 
-import com.wandookong.voice_me_sing.entity.RefreshTokenEntity;
 import com.wandookong.voice_me_sing.jwt.JWTUtil;
 import com.wandookong.voice_me_sing.repository.RefreshTokenRepository;
-import com.wandookong.voice_me_sing.util.CookieUtil;
+import com.wandookong.voice_me_sing.util.TokenUtil;
 import io.jsonwebtoken.ExpiredJwtException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.Date;
 import java.util.Map;
 
 @Service
@@ -17,7 +15,7 @@ public class ReissueService {
 
     private final JWTUtil jwtUtil;
     private final RefreshTokenRepository refreshTokenRepository;
-    private final CookieUtil cookieUtil;
+    private final TokenUtil tokenUtil;
 
     public Map<String, String> reissueAccessRefresh(String refreshToken) {
 
@@ -67,7 +65,9 @@ public class ReissueService {
 
         // refresh 토큰 삭제 후 저장
         refreshTokenRepository.deleteByRefreshToken(refreshToken);
-        addRefreshEntity(email, newRefreshToken);
+
+        // 새로운 refresh 토큰을 DB에 저장
+        tokenUtil.saveRefreshToken(email, newRefreshToken);
 
         // 새로운 refresh 토큰과 access 토큰 리턴
         return Map.of("newRefreshToken", newRefreshToken, "newAccessToken", newAccessToken);
@@ -78,18 +78,4 @@ public class ReissueService {
 
 //        return new ResponseEntity<>("new access/refresh token issued", HttpStatus.OK);
     }
-
-    // 새로운 refresh 토큰을 DB에 저장
-    private void addRefreshEntity(String email, String refresh) {
-
-        Date date = new Date(System.currentTimeMillis() + 86400000L); // 24시간
-
-        RefreshTokenEntity refreshEntity = new RefreshTokenEntity();
-        refreshEntity.setEmail(email);
-        refreshEntity.setRefreshToken(refresh);
-        refreshEntity.setExpiration(date.toString());
-
-        refreshTokenRepository.save(refreshEntity);
-    }
-
 }

@@ -9,6 +9,7 @@ import com.wandookong.voice_me_sing.repository.RefreshTokenRepository;
 import com.wandookong.voice_me_sing.repository.UserRepository;
 import com.wandookong.voice_me_sing.service.CustomOAuth2UserService;
 import com.wandookong.voice_me_sing.util.CookieUtil;
+import com.wandookong.voice_me_sing.util.TokenUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -39,6 +40,7 @@ public class SecurityConfig {
     private final RefreshTokenRepository refreshTokenRepository;
     private final CookieUtil cookieUtil;
     private final UserRepository userRepository;
+    private final TokenUtil tokenUtil;
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
@@ -95,7 +97,7 @@ public class SecurityConfig {
         );
 
         // 필터 설정
-        http.addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration), jwtUtil, refreshTokenRepository, cookieUtil, userRepository), UsernamePasswordAuthenticationFilter.class);
+        http.addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration), jwtUtil, refreshTokenRepository, cookieUtil, userRepository, tokenUtil), UsernamePasswordAuthenticationFilter.class);
         http.addFilterBefore(new JWTFilter(jwtUtil), LoginFilter.class);
         http.addFilterBefore(new CustomLogoutFilter(jwtUtil, refreshTokenRepository, cookieUtil), LogoutFilter.class);
 

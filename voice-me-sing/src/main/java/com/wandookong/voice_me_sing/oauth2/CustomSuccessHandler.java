@@ -1,10 +1,10 @@
 package com.wandookong.voice_me_sing.oauth2;
 
 import com.wandookong.voice_me_sing.dto.oauth2.CustomOAuth2User;
-import com.wandookong.voice_me_sing.entity.RefreshTokenEntity;
 import com.wandookong.voice_me_sing.jwt.JWTUtil;
 import com.wandookong.voice_me_sing.repository.RefreshTokenRepository;
 import com.wandookong.voice_me_sing.util.CookieUtil;
+import com.wandookong.voice_me_sing.util.TokenUtil;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -17,7 +17,6 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.util.Collection;
-import java.util.Date;
 import java.util.Iterator;
 
 @Component
@@ -27,6 +26,7 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
     private final JWTUtil jwtUtil;
     private final CookieUtil cookieUtil;
     private final RefreshTokenRepository refreshTokenRepository;
+    private final TokenUtil tokenUtil;
 
     @Value("${spring.frontEndServerUrl}")
     private String frontEndServerUrl;
@@ -48,28 +48,11 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         String access = jwtUtil.createJwt("access", email, role, 600000L); // 10분
         String refresh = jwtUtil.createJwt("refresh", email, role, 86400000L); // 24시간
 
-        saveRefreshToken(email, refresh);
+        tokenUtil.saveRefreshToken(email, refresh);
 
         response.addCookie(cookieUtil.createCookie("access", access)); // 후에 token-reformat 으로 헤더로 재전송
         response.addCookie(cookieUtil.createCookie("refresh", refresh));
         response.setStatus(HttpServletResponse.SC_OK);
         response.sendRedirect(frontEndServerUrl);
     }
-
-    private void saveRefreshToken(String email, String refresh) {
-
-        Date expirationDate = new Date(System.currentTimeMillis() + 86400000L); // 24시간
-
-        RefreshTokenEntity refreshEntity = new RefreshTokenEntity();
-        refreshEntity.setEmail(email);
-        refreshEntity.setRefreshToken(refresh);
-        refreshEntity.setExpiration(expirationDate);
-
-        refreshTokenRepository.save(refreshEntity);
-
-        // expiration 이 지난 토큰은 삭제
-        Date currentDate = new Date();
-        refreshTokenRepository.deleteByExpirationBefore(currentDate);
-    }
-
 }

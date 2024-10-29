@@ -13,5 +13,6 @@ public interface RefreshTokenRepository extends JpaRepository<RefreshTokenEntity
     @Transactional
     void deleteByRefreshToken(String refreshToken);
 
+    @Transactional
     void deleteByExpirationBefore(Date expiration);
 }
