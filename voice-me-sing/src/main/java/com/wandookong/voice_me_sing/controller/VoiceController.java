@@ -2,6 +2,7 @@ package com.wandookong.voice_me_sing.controller;
 
 import com.wandookong.voice_me_sing.dto.ResponseDTO;
 import com.wandookong.voice_me_sing.dto.TrainVoiceDTO;
+import com.wandookong.voice_me_sing.dto.VoiceModelDTO;
 import com.wandookong.voice_me_sing.service.VoiceService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -12,6 +13,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -90,6 +92,19 @@ public class VoiceController {
 
         return voiceService.getVoiceModels(accessToken);
 
+    }
+
+    @DeleteMapping("/model-delete")
+    public ResponseEntity<?> deleteVoiceModel(VoiceModelDTO voiceModelDTO) {
+        boolean deleted = voiceService.deleteVoiceModel(voiceModelDTO);
+
+        if (deleted) {
+            ResponseDTO<String> responseDTO = new ResponseDTO<>("success", "model deleted", null);
+            return ResponseEntity.status(HttpStatus.OK).body(responseDTO);
+        } else {
+            ResponseDTO<String> responseDTO = new ResponseDTO<>("fail", "model not found", null);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(responseDTO);
+        }
     }
 
 }
