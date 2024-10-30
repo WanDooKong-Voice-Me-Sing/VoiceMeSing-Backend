@@ -3,12 +3,14 @@ package com.wandookong.voice_me_sing.entity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 import java.util.List;
 
 @Entity
 @Getter @Setter
 @Table(name = "user_table")
+@ToString
 public class UserEntity {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
