@@ -71,8 +71,33 @@ public class UserController {
         }
     }
 
+    @Operation(
+            summary = "Delete user account\n사용자 계정 삭제",
+            description = "Deletes the user's account based on the access token.\n액세스 토큰을 기반으로 사용자의 계정을 삭제"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Successfully deleted user account\n사용자 계정 성공적으로 삭제",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ResponseDTO.class),
+                            examples = @ExampleObject("{\"status\":\"success\",\"message\":\"account deleted\",\"data\":null}")
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "Account not found\n계정을 찾을 수 없음",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ResponseDTO.class),
+                            examples = @ExampleObject("{\"status\":\"fail\",\"message\":\"account not found\",\"data\":null}")
+                    )
+            )
+    })
     @DeleteMapping("/account-delete")
-    public ResponseEntity<?> deleteAccount(@RequestHeader(value = "access") String accessToken) {
+    public ResponseEntity<?> deleteAccount(@Parameter(description = "Access token for authentication\n인증을 위한 access 토큰", required = true)
+                                           @RequestHeader(value = "access") String accessToken) {
         boolean deleted = userService.deleteAccount(accessToken);
 
         if (deleted) {

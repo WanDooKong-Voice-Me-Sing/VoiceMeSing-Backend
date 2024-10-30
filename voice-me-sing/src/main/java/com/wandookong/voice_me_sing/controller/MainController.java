@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@Tag(name = "Main API", description = "main page\n메인 페이지")
+@Tag(name = "Main API", description = "Main page\n메인 페이지")
 public class MainController {
 
     @GetMapping("/")
