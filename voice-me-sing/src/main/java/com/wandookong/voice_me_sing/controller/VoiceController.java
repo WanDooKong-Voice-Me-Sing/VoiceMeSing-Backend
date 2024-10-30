@@ -94,8 +94,34 @@ public class VoiceController {
 
     }
 
+    @Operation(
+            summary = "Delete voice model\n음성 모델 삭제",
+            description = "Deletes the specified voice model based on the provided model details.\n지정된 음성 모델 세부 정보를 기반으로 음성 모델을 삭제"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Successfully deleted voice model\n음성 모델이 성공적으로 삭제됨",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ResponseDTO.class),
+                            examples = @ExampleObject("{\"status\":\"success\",\"message\":\"model deleted\",\"data\":null}")
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "Voice model not found\n음성 모델을 찾을 수 없음",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ResponseDTO.class),
+                            examples = @ExampleObject("{\"status\":\"fail\",\"message\":\"model not found\",\"data\":null}")
+                    )
+            )
+    })
     @DeleteMapping("/model-delete")
-    public ResponseEntity<?> deleteVoiceModel(VoiceModelDTO voiceModelDTO) {
+    public ResponseEntity<?> deleteVoiceModel(
+            @Parameter(description = "Voice model details to delete\n삭제할 음성 모델 세부 정보", required = true)
+            @RequestBody VoiceModelDTO voiceModelDTO) {
         boolean deleted = voiceService.deleteVoiceModel(voiceModelDTO);
 
         if (deleted) {
