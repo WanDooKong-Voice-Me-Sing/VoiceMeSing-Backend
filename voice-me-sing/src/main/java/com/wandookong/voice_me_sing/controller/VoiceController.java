@@ -94,14 +94,15 @@ public class VoiceController {
 
     }
 
+    @DeleteMapping("/model-delete")
     @Operation(
             summary = "Delete voice model\n음성 모델 삭제",
-            description = "Deletes the specified voice model based on the provided model details.\n지정된 음성 모델 세부 정보를 기반으로 음성 모델을 삭제"
+            description = "Deletes the specified voice model based on the provided ID.\n지정된 ID를 기반으로 음성 모델을 삭제"
     )
     @ApiResponses(value = {
             @ApiResponse(
                     responseCode = "200",
-                    description = "Successfully deleted voice model\n음성 모델이 성공적으로 삭제됨",
+                    description = "Successfully deleted the voice model\n성공적으로 음성 모델을 삭제",
                     content = @Content(
                             mediaType = "application/json",
                             schema = @Schema(implementation = ResponseDTO.class),
@@ -118,11 +119,10 @@ public class VoiceController {
                     )
             )
     })
-    @DeleteMapping("/model-delete")
     public ResponseEntity<?> deleteVoiceModel(
-            @Parameter(description = "Voice model details to delete\n삭제할 음성 모델 세부 정보", required = true)
-            @RequestBody VoiceModelDTO voiceModelDTO) {
-        boolean deleted = voiceService.deleteVoiceModel(voiceModelDTO);
+            @Parameter(description = "Voice model ID to delete\n삭제할 음성 모델의 ID", required = true)
+            @RequestParam String voiceModelId) {
+        boolean deleted = voiceService.deleteVoiceModel(Long.parseLong(voiceModelId));
 
         if (deleted) {
             ResponseDTO<String> responseDTO = new ResponseDTO<>("success", "model deleted", null);

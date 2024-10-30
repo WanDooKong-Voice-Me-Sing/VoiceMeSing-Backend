@@ -91,8 +91,7 @@ public class VoiceService {
 
     }
 
-    public boolean deleteVoiceModel(VoiceModelDTO voiceModelDTO) {
-        Long voiceModelId = voiceModelDTO.getVoiceModelId();
+    public boolean deleteVoiceModel(Long voiceModelId) {
         Optional<VoiceModelEntity> optional = voiceModelRepository.findById(voiceModelId);
 
         if (optional.isPresent()) {
