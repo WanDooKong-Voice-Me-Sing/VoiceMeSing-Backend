@@ -5,9 +5,11 @@ import com.wandookong.voice_me_sing.dto.ResponseDTO;
 import com.wandookong.voice_me_sing.dto.TrainVoiceDTO;
 import com.wandookong.voice_me_sing.dto.VoiceModelDTO;
 import com.wandookong.voice_me_sing.entity.UserEntity;
+import com.wandookong.voice_me_sing.entity.VoiceModelEntity;
 import com.wandookong.voice_me_sing.entity.VoiceTempEntity;
 import com.wandookong.voice_me_sing.jwt.JWTUtil;
 import com.wandookong.voice_me_sing.repository.UserRepository;
+import com.wandookong.voice_me_sing.repository.VoiceModelRepository;
 import com.wandookong.voice_me_sing.repository.VoiceTempRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -29,6 +31,7 @@ public class VoiceService {
     private final UserRepository userRepository;
     private final JWTUtil jwtUtil;
     private final AiService aiService;
+    private final VoiceModelRepository voiceModelRepository;
 
     @Value("${spring.savePath}")
     private String path;
@@ -86,5 +89,16 @@ public class VoiceService {
 
         return ResponseEntity.ok().body(responseDTO);
 
+    }
+
+    public boolean deleteVoiceModel(VoiceModelDTO voiceModelDTO) {
+        Long voiceModelId = voiceModelDTO.getVoiceModelId();
+        Optional<VoiceModelEntity> optional = voiceModelRepository.findById(voiceModelId);
+
+        if (optional.isPresent()) {
+            voiceModelRepository.deleteById(voiceModelId);
+            return true;
+        }
+        return false;
     }
 }

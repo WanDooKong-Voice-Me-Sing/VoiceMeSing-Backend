@@ -2,6 +2,7 @@ package com.wandookong.voice_me_sing.controller;
 
 import com.wandookong.voice_me_sing.dto.ResponseDTO;
 import com.wandookong.voice_me_sing.dto.TrainVoiceDTO;
+import com.wandookong.voice_me_sing.dto.VoiceModelDTO;
 import com.wandookong.voice_me_sing.service.VoiceService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -12,6 +13,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -90,6 +92,45 @@ public class VoiceController {
 
         return voiceService.getVoiceModels(accessToken);
 
+    }
+
+    @Operation(
+            summary = "Delete voice model\n음성 모델 삭제",
+            description = "Deletes the specified voice model based on the provided model details.\n지정된 음성 모델 세부 정보를 기반으로 음성 모델을 삭제"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Successfully deleted voice model\n음성 모델이 성공적으로 삭제됨",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ResponseDTO.class),
+                            examples = @ExampleObject("{\"status\":\"success\",\"message\":\"model deleted\",\"data\":null}")
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "Voice model not found\n음성 모델을 찾을 수 없음",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ResponseDTO.class),
+                            examples = @ExampleObject("{\"status\":\"fail\",\"message\":\"model not found\",\"data\":null}")
+                    )
+            )
+    })
+    @DeleteMapping("/model-delete")
+    public ResponseEntity<?> deleteVoiceModel(
+            @Parameter(description = "Voice model details to delete\n삭제할 음성 모델 세부 정보", required = true)
+            @RequestBody VoiceModelDTO voiceModelDTO) {
+        boolean deleted = voiceService.deleteVoiceModel(voiceModelDTO);
+
+        if (deleted) {
+            ResponseDTO<String> responseDTO = new ResponseDTO<>("success", "model deleted", null);
+            return ResponseEntity.status(HttpStatus.OK).body(responseDTO);
+        } else {
+            ResponseDTO<String> responseDTO = new ResponseDTO<>("fail", "model not found", null);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(responseDTO);
+        }
     }
 
 }
