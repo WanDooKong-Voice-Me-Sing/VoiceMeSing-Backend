@@ -1,6 +1,7 @@
 package com.wandookong.voice_me_sing.controller;
 
 import com.wandookong.voice_me_sing.dto.ResponseDTO;
+import com.wandookong.voice_me_sing.dto.UpdateDTO;
 import com.wandookong.voice_me_sing.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -13,10 +14,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
@@ -105,6 +103,60 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.OK).body(responseDTO);
         } else {
             ResponseDTO<String> responseDTO = new ResponseDTO<>("fail", "account not found", null);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(responseDTO);
+        }
+    }
+
+    @Operation(
+            summary = "Update user profile\n사용자 프로필 업데이트",
+            description = "Updates the user profile with provided information such as nickname or password.\n닉네임이나 비밀번호 등 사용자 프로필을 업데이트"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Profile successfully updated\n프로필 성공적으로 업데이트",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ResponseDTO.class),
+                            examples = @ExampleObject(value = "{\"status\":\"success\",\"message\":\"profile updated\",\"data\":{\"nickname\":\"newNickname\"}}")
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "Profile not found\n프로필을 찾을 수 없음",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ResponseDTO.class),
+                            examples = @ExampleObject(value = "{\"status\":\"fail\",\"message\":\"profile not found\",\"data\":null}")
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "409",
+                    description = "Duplicate nickname\n중복된 닉네임",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ResponseDTO.class),
+                            examples = @ExampleObject(value = "{\"status\":\"fail\",\"message\":\"duplicate nickname\",\"data\":null}")
+                    )
+            )
+    })
+    @PatchMapping("/profile-update")
+    public ResponseEntity<?> updateProfile(
+            @Parameter(description = "Access token for authentication\n인증을 위한 액세스 토큰", required = true)
+            @RequestHeader(value = "access") String accessToken,
+            @RequestBody UpdateDTO updateDTO) {
+
+        String updatedProfile = userService.updateProfile(accessToken, updateDTO);
+
+        if ("DUPLICATE_NICKNAME".equals(updatedProfile)) {
+            ResponseDTO<String> responseDTO = new ResponseDTO<>("fail", "duplicate nickname", null);
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(responseDTO);
+        } else if (updatedProfile != null) {
+            ResponseDTO<Map<String, String>> responseDTO = new ResponseDTO<>("success", "profile updated",
+                    Map.of("nickname", updatedProfile));
+            return ResponseEntity.status(HttpStatus.OK).body(responseDTO);
+        } else {
+            ResponseDTO<String> responseDTO = new ResponseDTO<>("fail", "profile not found", null);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(responseDTO);
         }
     }
