@@ -33,17 +33,16 @@ public class SongService {
         MultipartFile multipartFile = createSongDTO.getSongFile(); // 파일 추출
         String originalSongFileName = multipartFile.getOriginalFilename(); // 이름 추출
         String storedSongFileName = System.currentTimeMillis() + "_" + originalSongFileName; // 저장 이름 설정
-        String savePath = path + storedSongFileName; // 저장 폴더 지정
-        multipartFile.transferTo(new File(savePath)); // 저장
+        String savePath = path + storedSongFileName; // 저장 위치 지정
+        multipartFile.transferTo(new File(savePath)); // 해당 위치에 저장
 
-        // 2. 파일 디비 임시 저장
-        SongTempEntity songTempEntity = new SongTempEntity(originalSongFileName, storedSongFileName, savePath);
-        SongTempEntity savedEntity = songTempRepository.save(songTempEntity);
+//        // 2. 파일 디비 임시 저장
+//        SongTempEntity songTempEntity = new SongTempEntity(originalSongFileName, storedSongFileName, savePath);
+//        SongTempEntity savedEntity = songTempRepository.save(songTempEntity);
 
-        // 3. 필요한 값 뽑아서 ai server 전달 :: userId, songId, modelId
+//        Long songId = savedEntity.getSongId();
 
-        Long songId = savedEntity.getSongId();
-        Long voiceModelId = createSongDTO.getVoiceModelId();
+        // 2. AI 서버가 필요한 정보 추출 (userId, savePath, voiceModelID, resultSongName)
 
         // access 토큰으로부터 사용자 id 뽑아내기
         String email = jwtUtil.getEmail(accessToken);
@@ -52,8 +51,12 @@ public class SongService {
         UserEntity userEntity = optionalUserEntity.get();
         Long userId = userEntity.getUserId();
 
+        Long voiceModelId = createSongDTO.getVoiceModelId();
+
+        String resultSongName = createSongDTO.getResultSongName();
+
         // 4. 요청
         return true;
-//        return aiService.toPythonCoverSong(userId, songId, voiceModelId); // 어떤 사용자가 어떤 음원을 어떤 모델로
+//        return aiService.toPythonCoverSong(userId, savePath, voiceModelId, resultSongName);
     }
 }

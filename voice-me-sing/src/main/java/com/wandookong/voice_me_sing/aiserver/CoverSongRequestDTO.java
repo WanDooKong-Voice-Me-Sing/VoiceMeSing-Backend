@@ -13,11 +13,14 @@ import lombok.ToString;
 @AllArgsConstructor
 public class CoverSongRequestDTO {
     @Schema(description = "", example = "")
-    private Long songId;
+    private Long userId;
+
+    @Schema(description = "", example = "")
+    private String savePath;
 
     @Schema(description = "", example = "")
     private Long voiceModelId;
 
     @Schema(description = "", example = "")
-    private Long userId;
+    private String resultSongName;
 }

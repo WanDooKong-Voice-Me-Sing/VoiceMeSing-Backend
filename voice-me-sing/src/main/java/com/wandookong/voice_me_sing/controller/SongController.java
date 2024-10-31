@@ -12,11 +12,9 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestPart;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -45,15 +43,6 @@ public class SongController {
                                     "\"voiceModelId\":123}}")
                     )
             )
-//            @ApiResponse(
-//                    responseCode = "fail",
-//                    description = "Failed to upload cover song\n커버 곡 업로드 실패",
-//                    content = @Content(
-//                            mediaType = "application/json",
-//                            schema = @Schema(implementation = ResponseDTO.class),
-//                            examples = @ExampleObject("{\"status\":\"fail\",\"message\":\"no user found\",\"data\":null}")
-//                    )
-//            )
     })
     @PostMapping(value = "/create-song", consumes = "multipart/form-data")
     public ResponseEntity<?> uploadCoverSong(
@@ -69,7 +58,6 @@ public class SongController {
             @RequestPart(name = "voiceModelId") String voiceModelId) throws IOException {
 
         CreateSongDTO createSongDTO = new CreateSongDTO(resultSongName, songFile, Long.parseLong(voiceModelId));
-
         boolean success = songService.createCoverSong(createSongDTO, accessToken);
 
         ResponseDTO<Map<String, Object>> responseDTO = new ResponseDTO<>("success", "cover song uploaded",
@@ -81,8 +69,11 @@ public class SongController {
 
         if (success) {
             return ResponseEntity.ok().body(responseDTO);
-        }
-        return null;
+        } else return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponseDTO<String>("fail", "cover song upload failed", null));
     }
 
+    @GetMapping("/collection-coversong")
+    public ResponseEntity<?> getCoverSongs() {
+        return null;
+    }
 }

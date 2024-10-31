@@ -17,7 +17,7 @@ public class VoiceModelRequestDTO {
     private Long userId;
 
     @Schema(description = "", example = "")
-    private Long voiceId;
+    private String savePath;
 
     @Schema(description = "", example = "")
     private String voiceModelName;

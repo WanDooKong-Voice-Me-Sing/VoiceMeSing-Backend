@@ -14,9 +14,9 @@ public class AiService {
     @Value("${spring.pythonServerUrl}")
     private String pythonServerUrl;
 
-    public boolean toPythonVoiceModel(Long userId, Long voiceId, String voiceModelName) {
+    public boolean toPythonVoiceModel(Long userId, String savePath, String voiceModelName) {
 
-        VoiceModelRequestDTO voiceModelRequestDTO = new VoiceModelRequestDTO(userId, voiceId, voiceModelName);
+        VoiceModelRequestDTO voiceModelRequestDTO = new VoiceModelRequestDTO(userId, savePath, voiceModelName);
 
         String message = restTemplate.postForObject(pythonServerUrl, voiceModelRequestDTO, String.class);
 
@@ -26,9 +26,9 @@ public class AiService {
         return message != null;
     }
 
-    public boolean toPythonCoverSong(Long userId, Long songId, Long voiceModelId) {
+    public boolean toPythonCoverSong(Long userId, String savePath, Long voiceModelId, String resultSongName) {
 
-        CoverSongRequestDTO coverSongRequestDTO = new CoverSongRequestDTO(songId, userId, voiceModelId);
+        CoverSongRequestDTO coverSongRequestDTO = new CoverSongRequestDTO(userId, savePath, voiceModelId, resultSongName);
 
         String message = restTemplate.postForObject(pythonServerUrl, coverSongRequestDTO, String.class);
         
