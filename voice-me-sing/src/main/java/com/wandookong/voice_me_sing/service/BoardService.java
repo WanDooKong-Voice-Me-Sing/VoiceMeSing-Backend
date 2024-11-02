@@ -91,4 +91,24 @@ public class BoardService {
 
         return "EDITED";
     }
+
+    public BoardDTO findById(String boardId) {
+        Optional<BoardEntity> optionalBoardEntity = boardRepository.findById(Long.valueOf(boardId));
+
+        if (optionalBoardEntity.isEmpty()) return null;
+
+        BoardEntity boardEntity = optionalBoardEntity.get();
+
+        return BoardDTO.toBoardDTO(boardEntity);
+    }
+
+    public boolean checkWriter(String boardId, String accessToken) {
+        String email = jwtUtil.getEmail(accessToken);
+        String nickname = userRepository.findNicknameByEmail(email);
+
+        Optional<BoardEntity> optionalBoardEntity = boardRepository.findById(Long.valueOf(boardId));
+        String boardWriter = optionalBoardEntity.get().getBoardWriter();
+
+        return nickname.equals(boardWriter);
+    }
 }

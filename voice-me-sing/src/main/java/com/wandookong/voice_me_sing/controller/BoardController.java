@@ -106,6 +106,30 @@ public class BoardController {
         return ResponseEntity.ok().body(responseDTO);
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<?> findById(
+            @RequestHeader(value = "access", required = false) String accessToken,
+            @PathVariable(value = "id") String boardId
+    ) {
+        BoardDTO boardDTO = boardService.findById(boardId);
+        boolean isWriter = false;
+        if (boardDTO != null && accessToken != null) {
+            isWriter = boardService.checkWriter(boardId, accessToken);
+        }
+
+        if (boardDTO == null) {
+            ResponseDTO<BoardDTO> responseDTO = new ResponseDTO<>("fail", "failed to get the post", null);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseDTO);
+        } else {
+            ResponseDTO<Map<String, Object>> responseDTO = new ResponseDTO<>("success", "get the post successfully",
+                    Map.of(
+                            "board", boardDTO,
+                            "isWriter", isWriter
+                    ));
+            return ResponseEntity.ok().body(responseDTO);
+        }
+    }
+
     @PostMapping("/edit")
     public ResponseEntity<?> editPost(
             @RequestHeader(value = "access") String accessToken,
