@@ -1,10 +1,13 @@
 package com.wandookong.voice_me_sing.service;
 
 import com.wandookong.voice_me_sing.aiserver.AiService;
+import com.wandookong.voice_me_sing.dto.CoverSongDTO;
 import com.wandookong.voice_me_sing.dto.CreateSongDTO;
+import com.wandookong.voice_me_sing.entity.CoverSongEntity;
 import com.wandookong.voice_me_sing.entity.SongTempEntity;
 import com.wandookong.voice_me_sing.entity.UserEntity;
 import com.wandookong.voice_me_sing.jwt.JWTUtil;
+import com.wandookong.voice_me_sing.repository.CoverSongRepository;
 import com.wandookong.voice_me_sing.repository.SongTempRepository;
 import com.wandookong.voice_me_sing.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -14,6 +17,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -24,6 +28,7 @@ public class SongService {
     private final SongTempRepository songTempRepository;
     private final JWTUtil jwtUtil;
     private final UserRepository userRepository;
+    private final CoverSongRepository coverSongRepository;
 
     @Value("${spring.savePath}")
     private String path;
@@ -58,5 +63,31 @@ public class SongService {
         // 4. 요청
         return true;
 //        return aiService.toPythonCoverSong(userId, savePath, voiceModelId, resultSongName);
+    }
+
+    public List<CoverSongDTO> getCoverSongs(String accessToken) {
+        String email = jwtUtil.getEmail(accessToken);
+        // 사용자가 없을 경우 null 리턴: 사용자가 있는데 모델이 없을 경우는 어떻게 처리할 건지 문제 -> 우선 사용자 무조건 있다고 가정
+
+        Optional<UserEntity> optionalUserEntity = userRepository.findByEmail(email);
+
+        assert optionalUserEntity.isPresent();
+        UserEntity userEntity = optionalUserEntity.get();
+
+        List<CoverSongDTO> coverSongDTOs = userEntity.getCoverSongs().stream()
+                .map(cs -> new CoverSongDTO(cs.getCoverSongId(), cs.getCoverSongName()))
+                .toList();
+
+        return coverSongDTOs;
+    }
+
+    public boolean deleteCoverSong(long coverSongId) {
+        Optional<CoverSongEntity> byId = coverSongRepository.findById(coverSongId);
+
+        if (byId.isPresent()) {
+            coverSongRepository.deleteById(coverSongId);
+            return true;
+        } else return false;
+
     }
 }

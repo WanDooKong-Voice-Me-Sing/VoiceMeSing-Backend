@@ -70,10 +70,10 @@ public class VoiceService {
         String email = jwtUtil.getEmail(userToken);
 
         // 사용자 검색
+        // 사용자가 없을 경우 null 리턴: 사용자가 있는데 모델이 없을 경우는 어떻게 처리할 건지 문제 -> 우선 사용자 무조건 있다고 가정
         Optional<UserEntity> optionalUserEntity = userRepository.findByEmail(email);
-        if (optionalUserEntity.isEmpty()) {
-            return null;
-        }
+
+        assert optionalUserEntity.isPresent();
         UserEntity userEntity = optionalUserEntity.get();
 
         // 사용자 소유 VoiceModels 의 DTO 리스트 생성

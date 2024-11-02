@@ -1,5 +1,6 @@
 package com.wandookong.voice_me_sing.controller;
 
+import com.wandookong.voice_me_sing.dto.CoverSongDTO;
 import com.wandookong.voice_me_sing.dto.CreateSongDTO;
 import com.wandookong.voice_me_sing.dto.ResponseDTO;
 import com.wandookong.voice_me_sing.service.SongService;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -69,11 +71,78 @@ public class SongController {
 
         if (success) {
             return ResponseEntity.ok().body(responseDTO);
-        } else return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponseDTO<String>("fail", "cover song upload failed", null));
+        } else
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponseDTO<String>("fail", "cover song upload failed", null));
     }
 
+    @Operation(
+            summary = "Get user cover song list\n사용자의 커버 음악 리스트 조회",
+            description = "Retrieves the list of cover songs associated with the authenticated user\n인증된 사용자의 커버 음악 리스트를 조회"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Successfully retrieved the cover song list\n커버 음악 리스트를 성공적으로 조회",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ResponseDTO.class),
+                            examples = @ExampleObject(value = "{\"status\":\"success\",\"message\":\"get cover songs successfully\",\"data\":[{\"coverSongId\":1,\"coverSongName\":\"Song One\"},{\"coverSongId\":2,\"coverSongName\":\"Song Two\"}]}")
+                    )
+            )
+    })
     @GetMapping("/collection-coversong")
-    public ResponseEntity<?> getCoverSongs() {
-        return null;
+    // 사용자의 커버 음악 리스트 조회
+    public ResponseEntity<?> getCoverSongs(@Parameter(description = "Access token for authentication\n인증을 위한 access 토큰", required = true)
+                                           @RequestHeader(value = "access") String accessToken) {
+
+        List<CoverSongDTO> coverSongDTOs = songService.getCoverSongs(accessToken);
+
+        ResponseDTO<List<CoverSongDTO>> responseDTO = new ResponseDTO<>("success", "get cover songs successfully", coverSongDTOs);
+        return ResponseEntity.ok().body(responseDTO);
+
+//        if (coverSongDTOs.isEmpty()) {
+//            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ResponseDTO<String>("fail", "no user", null));
+//        } else {
+//
+//        }
+    }
+
+    @Operation(
+            summary = "Delete user's cover song\n사용자의 커버 음악 삭제",
+            description = "Deletes the specified cover song based on the provided cover song ID\n제공된 커버 음악 ID를 기반으로 해당 사용자의 커버 음악을 삭제"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Successfully deleted the cover song\n커버 음악을 성공적으로 삭제",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ResponseDTO.class),
+                            examples = @ExampleObject(value = "{\"status\":\"success\",\"message\":\"song deleted\",\"data\":null}")
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "Cover song not found\n커버 음악을 찾을 수 없음",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ResponseDTO.class),
+                            examples = @ExampleObject(value = "{\"status\":\"fail\",\"message\":\"song not found\",\"data\":null}")
+                    )
+            )
+    })
+    @DeleteMapping("/coversong-delete")
+    // 사용자의 커버 음악 삭제
+    public ResponseEntity<?> deleteCoverSong(@RequestParam String coverSongId) {
+
+        boolean deleted = songService.deleteCoverSong(Long.parseLong(coverSongId));
+
+        if (deleted) {
+            ResponseDTO<String> responseDTO = new ResponseDTO<>("success", "song deleted", null);
+            return ResponseEntity.status(HttpStatus.OK).body(responseDTO);
+        } else {
+            ResponseDTO<String> responseDTO = new ResponseDTO<>("fail", "song not found", null);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(responseDTO);
+        }
     }
 }

@@ -7,16 +7,19 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Getter @Setter
-@Table(name = "voice_model")
+@Getter
+@Setter
+@Table(name = "cover_song")
 @NoArgsConstructor
 @AllArgsConstructor
-//@JsonIgnoreProperties({"userEntity"})
-public class VoiceModelEntity {
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long voiceModelId;
-    private String voiceModelName;
-//    private String FilePath; // => voiceModelFile 로 변경
+public class CoverSongEntity {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long coverSongId;
+    private String coverSongName;
+    private String savePath;
+//    private T coverSongFile;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
