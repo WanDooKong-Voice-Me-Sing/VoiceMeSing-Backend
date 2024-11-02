@@ -32,12 +32,12 @@ public class TokenController {
     private final CookieUtil cookieUtil;
 
     @Operation(
-            summary = "Reissue access and refresh tokens\naccess 토큰과 refresh 토큰 재발급",
-            description = "Reissue access and refresh tokens if a valid refresh token is provided.\n유효한 refresh 토큰이 제공되면 access 토큰과 refresh 토큰을 재발급")
+            summary = "Reissue access and refresh tokens\n엑세스 토큰과 리프레시 토큰 재발급",
+            description = "Reissue access and refresh tokens if a valid refresh token is provided.\n유효한 리프레시 토큰이 제공되면 엑세스 토큰과 리프레시 토큰을 재발급")
     @ApiResponses(value = {
             @ApiResponse(
                     responseCode = "200",
-                    description = "Access and refresh tokens reissued\naccess 토큰과 refresh 토큰 재발급",
+                    description = "Access and refresh tokens reissued\n엑세스 토큰과 리프레시 토큰 재발급",
                     content = @Content(
                             mediaType = "application/json",
                             schema = @Schema(implementation = ResponseDTO.class),
@@ -45,7 +45,7 @@ public class TokenController {
                     )
             ),
             @ApiResponse(
-                    responseCode = "400", description = "Invalid refresh token\n유효하지 않은 refresh 토큰",
+                    responseCode = "400", description = "Invalid refresh token\n유효하지 않은 리프레시 토큰",
                     content = @Content(
                             mediaType = "application/json",
                             schema = @Schema(implementation = ResponseDTO.class),
@@ -54,7 +54,7 @@ public class TokenController {
             )
     })
     @PostMapping("/reissue")
-    public ResponseEntity<?> reissue(@Parameter(description = "Refresh token for authentication\n인증을 위한 refresh 토큰", required = true)
+    public ResponseEntity<?> reissue(@Parameter(description = "Refresh token for authentication\n인증을 위한 리프레시 토큰", required = true)
                                      @CookieValue(value = "refresh") String refreshToken, HttpServletRequest request, HttpServletResponse response) {
 //        String refreshToken = null;
 //        Cookie[] cookies = request.getCookies();

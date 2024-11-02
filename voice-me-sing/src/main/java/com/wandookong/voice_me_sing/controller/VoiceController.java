@@ -85,7 +85,7 @@ public class VoiceController {
     @GetMapping("/collection-model")
     // 사용자의 음성 모델 리스트 조회
     public ResponseEntity<?> getVoiceModels(
-                                             @Parameter(description = "Access token for authentication\n인증을 위한 access 토큰", required = true)
+                                             @Parameter(description = "Access token for authentication\n인증을 위한 엑세스 토큰", required = true)
                                              @RequestHeader(value = "access") String accessToken) {
 
         List<VoiceModelDTO> voiceModelDTOs = voiceService.getVoiceModels(accessToken);

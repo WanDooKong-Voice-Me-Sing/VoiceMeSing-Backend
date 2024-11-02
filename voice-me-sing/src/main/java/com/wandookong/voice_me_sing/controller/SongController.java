@@ -48,7 +48,7 @@ public class SongController {
     })
     @PostMapping(value = "/create-song", consumes = "multipart/form-data")
     public ResponseEntity<?> uploadCoverSong(
-            @Parameter(description = "Access token for authentication\n인증을 위한 access 토큰", required = true)
+            @Parameter(description = "Access token for authentication\n인증을 위한 엑세스 토큰", required = true)
             @RequestHeader(value = "access") String accessToken,
 
             @Parameter(description = "The name of the result cover song\n결과 커버곡의 이름")
@@ -92,7 +92,7 @@ public class SongController {
     })
     @GetMapping("/collection-coversong")
     // 사용자의 커버 음악 리스트 조회
-    public ResponseEntity<?> getCoverSongs(@Parameter(description = "Access token for authentication\n인증을 위한 access 토큰", required = true)
+    public ResponseEntity<?> getCoverSongs(@Parameter(description = "Access token for authentication\n인증을 위한 엑세스 토큰", required = true)
                                            @RequestHeader(value = "access") String accessToken) {
 
         List<CoverSongDTO> coverSongDTOs = songService.getCoverSongs(accessToken);

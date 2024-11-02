@@ -51,7 +51,7 @@ public class UserController {
             )
     })
     @GetMapping("/profile")
-    public ResponseEntity<?> getProfile(@Parameter(description = "Access token for authentication\n인증을 위한 access 토큰", required = true)
+    public ResponseEntity<?> getProfile(@Parameter(description = "Access token for authentication\n인증을 위한 엑세스 토큰", required = true)
                                         @RequestHeader(value = "access") String accessToken) {
 
 //        String accessToken = request.getHeader("access");
@@ -94,7 +94,7 @@ public class UserController {
             )
     })
     @DeleteMapping("/account-delete")
-    public ResponseEntity<?> deleteAccount(@Parameter(description = "Access token for authentication\n인증을 위한 access 토큰", required = true)
+    public ResponseEntity<?> deleteAccount(@Parameter(description = "Access token for authentication\n인증을 위한 엑세스 토큰", required = true)
                                            @RequestHeader(value = "access") String accessToken) {
         boolean deleted = userService.deleteAccount(accessToken);
 
