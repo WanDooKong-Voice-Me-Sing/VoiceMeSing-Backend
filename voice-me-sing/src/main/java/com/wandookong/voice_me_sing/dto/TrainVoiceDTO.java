@@ -8,7 +8,8 @@ import lombok.ToString;
 import org.springframework.web.multipart.MultipartFile;
 
 @Schema(description = "음성 파일 업로드와 모델 이름 설정에 필요한 데이터 전송 객체")
-@Getter @Setter
+@Getter
+@Setter
 @ToString
 @AllArgsConstructor
 public class TrainVoiceDTO {

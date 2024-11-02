@@ -4,7 +4,6 @@ import com.wandookong.voice_me_sing.aiserver.AiService;
 import com.wandookong.voice_me_sing.dto.CoverSongDTO;
 import com.wandookong.voice_me_sing.dto.CreateSongDTO;
 import com.wandookong.voice_me_sing.entity.CoverSongEntity;
-import com.wandookong.voice_me_sing.entity.SongTempEntity;
 import com.wandookong.voice_me_sing.entity.UserEntity;
 import com.wandookong.voice_me_sing.jwt.JWTUtil;
 import com.wandookong.voice_me_sing.repository.CoverSongRepository;
@@ -81,7 +80,7 @@ public class SongService {
         return coverSongDTOs;
     }
 
-    public boolean deleteCoverSong(long coverSongId) {
+    public boolean deleteCoverSong(Long coverSongId) {
         Optional<CoverSongEntity> byId = coverSongRepository.findById(coverSongId);
 
         if (byId.isPresent()) {

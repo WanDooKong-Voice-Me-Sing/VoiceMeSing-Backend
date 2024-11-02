@@ -6,7 +6,8 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Schema(description = "음성 모델의 식별자와 이름을 담고 있는 데이터 전송 객체, 사용자에게 음성 모델 리스트 제공 시 사용")
-@Getter @Setter
+@Getter
+@Setter
 @AllArgsConstructor
 public class VoiceModelDTO {
 

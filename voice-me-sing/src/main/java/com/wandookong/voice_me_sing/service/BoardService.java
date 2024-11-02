@@ -4,7 +4,6 @@ import com.wandookong.voice_me_sing.dto.BoardDTO;
 import com.wandookong.voice_me_sing.dto.BoardEditDTO;
 import com.wandookong.voice_me_sing.dto.BoardSaveDTO;
 import com.wandookong.voice_me_sing.entity.BoardEntity;
-import com.wandookong.voice_me_sing.entity.UserEntity;
 import com.wandookong.voice_me_sing.jwt.JWTUtil;
 import com.wandookong.voice_me_sing.repository.BoardRepository;
 import com.wandookong.voice_me_sing.repository.UserRepository;
@@ -23,28 +22,22 @@ public class BoardService {
     private final JWTUtil jwtUtil;
     private final UserRepository userRepository;
 
-    public String save(BoardSaveDTO boardSaveDTO, String accessToken) {
+    public void save(BoardSaveDTO boardSaveDTO, String accessToken) {
         // accessToken 으로부터 사용자 정보(nickname) 추출
         String email = jwtUtil.getEmail(accessToken);
-        Optional<UserEntity> optionalUserEntity = userRepository.findByEmail(email);
+        String nickname = userRepository.findNicknameByEmail(email);
 
-        if (optionalUserEntity.isEmpty()) return "NO_USER";
-
-        String nickname = optionalUserEntity.get().getNickname();
-
-        System.out.println("nickname = " + nickname);
-
+        // nickname 을 바탕으로 게시글 저장
         boardRepository.save(BoardEntity.toBoardEntity(boardSaveDTO, nickname));
-
-        return "SAVED";
     }
 
     public List<BoardDTO> findAll() {
+        // 전체 게시글 리스트
         List<BoardEntity> boardEntityList = boardRepository.findAll();
-        List<BoardDTO> boardDTOList = new ArrayList<>();
 
+        // 전체 게시글 엔티티 -> DTO 변환
+        List<BoardDTO> boardDTOList = new ArrayList<>();
         for (BoardEntity boardEntity : boardEntityList) {
-            System.out.println("boardEntity.getBoardWriter() = " + boardEntity.getBoardWriter());
             boardDTOList.add(BoardDTO.toBoardDTO(boardEntity));
         }
 
@@ -52,16 +45,15 @@ public class BoardService {
     }
 
     public List<BoardDTO> findByUser(String accessToken) {
+        // accessToken 으로부터 사용자 정보(nickname) 추출
         String email = jwtUtil.getEmail(accessToken);
+        String nickname = userRepository.findNicknameByEmail(email);
 
-//        String nickname = userRepository.findNicknameByEmail(email);
-
-        Optional<UserEntity> optionalUserEntity = userRepository.findByEmail(email);
-        String nickname = optionalUserEntity.get().getNickname();
-
+        // nickname 으로 작성된 게시글 리스트 조회
         List<BoardEntity> boardEntityList = boardRepository.findByBoardWriter(nickname);
-        List<BoardDTO> boardDTOList = new ArrayList<>();
 
+        // 전체 게시글 엔티티 -> DTO 변환
+        List<BoardDTO> boardDTOList = new ArrayList<>();
         for (BoardEntity boardEntity : boardEntityList) {
             boardDTOList.add(BoardDTO.toBoardDTO(boardEntity));
         }
@@ -69,18 +61,18 @@ public class BoardService {
         return boardDTOList;
     }
 
-    public String editPost(String accessToken, BoardEditDTO boardEditDTO) {
+    public boolean editPost(String accessToken, BoardEditDTO boardEditDTO) {
         // 1. 수정하려는 게시글 작성자가 맞는지 확인
+        // accessToken 으로부터 사용자 정보(nickname) 추출
         String email = jwtUtil.getEmail(accessToken);
+        String nickname = userRepository.findNicknameByEmail(email);
 
-        Optional<UserEntity> optionalUserEntity = userRepository.findByEmail(email);
-        String nickname = optionalUserEntity.get().getNickname();
-
+        // boardId 로 해당 게시글 boardWriter(nickname) 조회
         Optional<BoardEntity> optionalBoardEntity = boardRepository.findById(Long.valueOf(boardEditDTO.getBoardId()));
         BoardEntity boardEntity = optionalBoardEntity.get();
         String boardWriter = boardEntity.getBoardWriter();
 
-        if (!nickname.equals(boardWriter)) return "BAD_ACCESS";
+        if (!nickname.equals(boardWriter)) return false;
 
         // 2. 수정
         boardEntity.setBoardTitle(boardEditDTO.getBoardTitle());
@@ -88,34 +80,39 @@ public class BoardService {
 
         boardRepository.save(boardEntity);
 
-        return "EDITED";
+        return true;
     }
 
     public BoardDTO findById(String boardId) {
+        // boardId 로 해당 게시글 조회
         Optional<BoardEntity> optionalBoardEntity = boardRepository.findById(Long.valueOf(boardId));
 
         if (optionalBoardEntity.isEmpty()) return null;
-
         BoardEntity boardEntity = optionalBoardEntity.get();
 
         return BoardDTO.toBoardDTO(boardEntity);
     }
 
     public boolean checkWriter(String boardId, String accessToken) {
+        // accessToken 으로부터 사용자 정보(nickname) 추출
         String email = jwtUtil.getEmail(accessToken);
         String nickname = userRepository.findNicknameByEmail(email);
 
+        // boardId 로 해당 게시글 boardWriter(nickname) 조회
         Optional<BoardEntity> optionalBoardEntity = boardRepository.findById(Long.valueOf(boardId));
         if (optionalBoardEntity.isEmpty()) return false;
         String boardWriter = optionalBoardEntity.get().getBoardWriter();
 
+        // 일치 여부 리턴
         return nickname.equals(boardWriter);
     }
 
     public boolean delete(String boardId, String accessToken) {
+        // 삭제하려는 게시글 작성자가 맞는지 확인
         boolean isWriter = checkWriter(boardId, accessToken);
         if (!isWriter) return false;
 
+        // 삭제
         boardRepository.deleteById(Long.valueOf(boardId));
 
         return true;

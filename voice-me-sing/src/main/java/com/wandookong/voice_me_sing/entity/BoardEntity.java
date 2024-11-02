@@ -4,10 +4,13 @@ import com.wandookong.voice_me_sing.dto.BoardSaveDTO;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 @Entity
 @Getter
 @Setter
+@ToString
+@Table(name = "board_table")
 public class BoardEntity extends TimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

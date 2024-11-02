@@ -63,7 +63,8 @@ public class VoiceController {
                     "modelName", voiceModelName
             ));
             return ResponseEntity.ok().body(responseDTO);
-        } else return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponseDTO<String>("fail", "file upload failed", null));
+        } else
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponseDTO<String>("fail", "file upload failed", null));
     }
 
     @Operation(
@@ -85,8 +86,8 @@ public class VoiceController {
     @GetMapping("/collection-model")
     // 사용자의 음성 모델 리스트 조회
     public ResponseEntity<?> getVoiceModels(
-                                             @Parameter(description = "Access token for authentication\n인증을 위한 엑세스 토큰", required = true)
-                                             @RequestHeader(value = "access") String accessToken) {
+            @Parameter(description = "Access token for authentication\n인증을 위한 엑세스 토큰", required = true)
+            @RequestHeader(value = "access") String accessToken) {
 
         List<VoiceModelDTO> voiceModelDTOs = voiceService.getVoiceModels(accessToken);
 
@@ -129,7 +130,8 @@ public class VoiceController {
     public ResponseEntity<?> deleteVoiceModel(
             @Parameter(description = "Voice model ID to delete\n삭제할 음성 모델의 ID", required = true)
             @RequestParam String voiceModelId) {
-        boolean deleted = voiceService.deleteVoiceModel(Long.parseLong(voiceModelId));
+
+        boolean deleted = voiceService.deleteVoiceModel(Long.valueOf(voiceModelId));
 
         if (deleted) {
             ResponseDTO<String> responseDTO = new ResponseDTO<>("success", "model deleted", null);

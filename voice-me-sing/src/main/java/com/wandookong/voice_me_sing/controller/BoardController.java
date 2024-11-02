@@ -56,18 +56,14 @@ public class BoardController {
             @Parameter(description = "게시글 작성에 필요한 정보\n게시글 제목과 내용을 포함하는 객체", required = true)
             @RequestBody BoardSaveDTO boardSaveDTO) {
 
-        String msg = boardService.save(boardSaveDTO, accessToken);
-        if ("SAVED".equals(msg)) {
-            ResponseDTO<Map<String, String>> responseDTO = new ResponseDTO<>("success", "board uploaded",
-                    Map.of(
-                            "boardTitle", boardSaveDTO.getBoardTitle(),
-                            "boardContents", boardSaveDTO.getBoardContents()
-                    ));
-            return ResponseEntity.ok().body(responseDTO);
-        } else {
-            ResponseDTO<Map<String, String>> responseDTO = new ResponseDTO<>("fail", "board upload failed", null);
-            return  ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseDTO);
-        }
+        boardService.save(boardSaveDTO, accessToken);
+
+        ResponseDTO<Map<String, String>> responseDTO = new ResponseDTO<>("success", "board uploaded",
+                Map.of(
+                        "boardTitle", boardSaveDTO.getBoardTitle(),
+                        "boardContents", boardSaveDTO.getBoardContents()
+                ));
+        return ResponseEntity.ok().body(responseDTO);
     }
 
     @Operation(
@@ -89,7 +85,6 @@ public class BoardController {
     })
     @GetMapping("/")
     public ResponseEntity<?> findAll() {
-
         List<BoardDTO> boardDTOList = boardService.findAll();
 
         ResponseDTO<List<BoardDTO>> responseDTO = new ResponseDTO<>("success", "get board list successfully", boardDTOList);
@@ -98,8 +93,8 @@ public class BoardController {
 
     @GetMapping("/my-post")
     public ResponseEntity<?> findUserPost(
-            @RequestHeader(value = "access") String accessToken
-    ) {
+            @RequestHeader(value = "access") String accessToken) {
+
         List<BoardDTO> boardDTOList = boardService.findByUser(accessToken);
 
         ResponseDTO<List<BoardDTO>> responseDTO = new ResponseDTO<>("success", "get user's post list successfully", boardDTOList);
@@ -109,8 +104,8 @@ public class BoardController {
     @GetMapping("/{id}")
     public ResponseEntity<?> findById(
             @RequestHeader(value = "access", required = false) String accessToken,
-            @PathVariable(value = "id") String boardId
-    ) {
+            @PathVariable(value = "id") String boardId) {
+
         BoardDTO boardDTO = boardService.findById(boardId);
         boolean isWriter = false;
         if (boardDTO != null && accessToken != null) {
@@ -133,8 +128,8 @@ public class BoardController {
     @DeleteMapping("/delete")
     public ResponseEntity<?> delete(
             @RequestHeader(value = "access") String accessToken,
-            @RequestBody Map<String, String> boardInfo
-    ) {
+            @RequestBody Map<String, String> boardInfo) {
+
         String boardId = boardInfo.get("boardId");
         boolean deleted = boardService.delete(boardId, accessToken);
 
@@ -150,11 +145,11 @@ public class BoardController {
     @PostMapping("/edit")
     public ResponseEntity<?> editPost(
             @RequestHeader(value = "access") String accessToken,
-            @RequestBody BoardEditDTO boardEditDTO
-    ) {
-        String msg = boardService.editPost(accessToken, boardEditDTO);
+            @RequestBody BoardEditDTO boardEditDTO) {
 
-        if ("EDITED".equals(msg)) {
+        boolean edited = boardService.editPost(accessToken, boardEditDTO);
+
+        if (edited) {
             ResponseDTO<Map<String, String>> responseDTO = new ResponseDTO<>("success", "get user's post list successfully",
                     Map.of(
                             "boardTitle", boardEditDTO.getBoardTitle(),

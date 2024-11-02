@@ -54,8 +54,9 @@ public class TokenController {
             )
     })
     @PostMapping("/reissue")
-    public ResponseEntity<?> reissue(@Parameter(description = "Refresh token for authentication\n인증을 위한 리프레시 토큰", required = true)
-                                     @CookieValue(value = "refresh") String refreshToken, HttpServletRequest request, HttpServletResponse response) {
+    public ResponseEntity<?> reissue(
+            @Parameter(description = "Refresh token for authentication\n인증을 위한 리프레시 토큰", required = true)
+            @CookieValue(value = "refresh") String refreshToken, HttpServletRequest request, HttpServletResponse response) {
 //        String refreshToken = null;
 //        Cookie[] cookies = request.getCookies();
 //
@@ -116,6 +117,7 @@ public class TokenController {
     public ResponseEntity<?> checkRefreshToken(
             @Parameter(description = "Refresh token stored in cookies\n쿠키에 저장된 리프레시 토큰", required = false)
             @CookieValue(value = "refresh", required = false) String refreshToken) {
+
         if (refreshToken != null) {
             return ResponseEntity.ok(new ResponseDTO<>("success", "Refresh token exists", true));
         } else {
@@ -154,6 +156,7 @@ public class TokenController {
             @CookieValue(value = "refresh", required = false) String refreshToken,
             @Parameter(description = "Access token stored in cookies\n쿠키에 저장된 액세스 토큰", required = false)
             @CookieValue(value = "access", required = false) String accessToken) {
+
         // 모두 존재 시 accessToken 헤더값으로 재전송
         if (refreshToken != null && accessToken != null) {
 
