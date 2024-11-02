@@ -51,7 +51,6 @@ public class BoardService {
         return boardDTOList;
     }
 
-//    @Transactional
     public List<BoardDTO> findByUser(String accessToken) {
         String email = jwtUtil.getEmail(accessToken);
 
@@ -107,8 +106,18 @@ public class BoardService {
         String nickname = userRepository.findNicknameByEmail(email);
 
         Optional<BoardEntity> optionalBoardEntity = boardRepository.findById(Long.valueOf(boardId));
+        if (optionalBoardEntity.isEmpty()) return false;
         String boardWriter = optionalBoardEntity.get().getBoardWriter();
 
         return nickname.equals(boardWriter);
+    }
+
+    public boolean delete(String boardId, String accessToken) {
+        boolean isWriter = checkWriter(boardId, accessToken);
+        if (!isWriter) return false;
+
+        boardRepository.deleteById(Long.valueOf(boardId));
+
+        return true;
     }
 }

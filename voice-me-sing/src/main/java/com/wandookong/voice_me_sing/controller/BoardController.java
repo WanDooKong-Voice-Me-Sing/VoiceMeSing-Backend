@@ -130,6 +130,23 @@ public class BoardController {
         }
     }
 
+    @DeleteMapping("/delete")
+    public ResponseEntity<?> delete(
+            @RequestHeader(value = "access") String accessToken,
+            @RequestBody Map<String, String> boardInfo
+    ) {
+        String boardId = boardInfo.get("boardId");
+        boolean deleted = boardService.delete(boardId, accessToken);
+
+        if (deleted) {
+            ResponseDTO<List<BoardDTO>> responseDTO = new ResponseDTO<>("success", "delete the post successfully", null);
+            return ResponseEntity.ok().body(responseDTO);
+        } else {
+            ResponseDTO<List<BoardDTO>> responseDTO = new ResponseDTO<>("success", "failed delete the post", null);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(responseDTO);
+        }
+    }
+
     @PostMapping("/edit")
     public ResponseEntity<?> editPost(
             @RequestHeader(value = "access") String accessToken,
