@@ -12,6 +12,7 @@ public class BoardDTO {
 
     private Long boardId;
     private String boardTitle;
+    private String boardWriter;
     private String boardContents;
 
     private int boardHits;
@@ -22,6 +23,7 @@ public class BoardDTO {
         BoardDTO boardDTO = new BoardDTO();
         boardDTO.setBoardId(boardEntity.getBoardId());
         boardDTO.setBoardTitle(boardEntity.getBoardTitle());
+        boardDTO.setBoardWriter(boardDTO.getBoardWriter());
         boardDTO.setBoardContents(boardEntity.getBoardContents());
         boardDTO.setBoardHits(boardEntity.getBoardHits());
         boardDTO.setBoardCreatedTime(boardEntity.getCreatedTime());

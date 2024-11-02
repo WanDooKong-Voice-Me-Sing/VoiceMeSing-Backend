@@ -1,5 +1,6 @@
 package com.wandookong.voice_me_sing.service;
 
+import com.wandookong.voice_me_sing.dto.BoardDTO;
 import com.wandookong.voice_me_sing.dto.BoardSaveDTO;
 import com.wandookong.voice_me_sing.entity.BoardEntity;
 import com.wandookong.voice_me_sing.entity.UserEntity;
@@ -9,6 +10,8 @@ import com.wandookong.voice_me_sing.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -31,5 +34,16 @@ public class BoardService {
         boardRepository.save(BoardEntity.toBoardEntity(boardSaveDTO, nickname));
 
         return "SAVED";
+    }
+
+    public List<BoardDTO> findAll() {
+        List<BoardEntity> boardEntityList = boardRepository.findAll();
+        List<BoardDTO> boardDTOList = new ArrayList<>();
+
+        for (BoardEntity boardEntity : boardEntityList) {
+            boardDTOList.add(BoardDTO.toBoardDTO(boardEntity));
+        }
+
+        return boardDTOList;
     }
 }
