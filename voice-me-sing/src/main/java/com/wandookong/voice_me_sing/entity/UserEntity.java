@@ -34,6 +34,6 @@ public class UserEntity {
     @OneToMany(mappedBy = "userEntity", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<VoiceModelEntity> voiceModels;
 
-    // coverSongsList
-
+    @OneToMany(mappedBy = "userEntity", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<CoverSongEntity> coverSongs;
 }
