@@ -37,7 +37,7 @@ public class BoardDTO {
         BoardDTO boardDTO = new BoardDTO();
         boardDTO.setBoardId(boardEntity.getBoardId());
         boardDTO.setBoardTitle(boardEntity.getBoardTitle());
-        boardDTO.setBoardWriter(boardDTO.getBoardWriter());
+        boardDTO.setBoardWriter(boardEntity.getBoardWriter());
         boardDTO.setBoardContents(boardEntity.getBoardContents());
         boardDTO.setBoardHits(boardEntity.getBoardHits());
         boardDTO.setBoardCreatedTime(boardEntity.getCreatedTime());

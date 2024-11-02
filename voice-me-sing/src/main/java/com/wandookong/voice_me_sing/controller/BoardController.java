@@ -1,6 +1,7 @@
 package com.wandookong.voice_me_sing.controller;
 
 import com.wandookong.voice_me_sing.dto.BoardDTO;
+import com.wandookong.voice_me_sing.dto.BoardEditDTO;
 import com.wandookong.voice_me_sing.dto.BoardSaveDTO;
 import com.wandookong.voice_me_sing.dto.ResponseDTO;
 import com.wandookong.voice_me_sing.service.BoardService;
@@ -93,5 +94,35 @@ public class BoardController {
 
         ResponseDTO<List<BoardDTO>> responseDTO = new ResponseDTO<>("success", "get board list successfully", boardDTOList);
         return ResponseEntity.ok().body(responseDTO);
+    }
+
+    @GetMapping("/my-post")
+    public ResponseEntity<?> findUserPost(
+            @RequestHeader(value = "access") String accessToken
+    ) {
+        List<BoardDTO> boardDTOList = boardService.findByUser(accessToken);
+
+        ResponseDTO<List<BoardDTO>> responseDTO = new ResponseDTO<>("success", "get user's post list successfully", boardDTOList);
+        return ResponseEntity.ok().body(responseDTO);
+    }
+
+    @PostMapping("/edit")
+    public ResponseEntity<?> editPost(
+            @RequestHeader(value = "access") String accessToken,
+            @RequestBody BoardEditDTO boardEditDTO
+    ) {
+        String msg = boardService.editPost(accessToken, boardEditDTO);
+
+        if ("EDITED".equals(msg)) {
+            ResponseDTO<Map<String, String>> responseDTO = new ResponseDTO<>("success", "get user's post list successfully",
+                    Map.of(
+                            "boardTitle", boardEditDTO.getBoardTitle(),
+                            "boardContents", boardEditDTO.getBoardContents()
+                    ));
+            return ResponseEntity.ok().body(responseDTO);
+        } else {
+            ResponseDTO<String> responseDTO = new ResponseDTO<>("fail", "failed to edit the post", null);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseDTO);
+        }
     }
 }

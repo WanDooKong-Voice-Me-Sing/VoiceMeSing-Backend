@@ -1,6 +1,7 @@
 package com.wandookong.voice_me_sing.service;
 
 import com.wandookong.voice_me_sing.dto.BoardDTO;
+import com.wandookong.voice_me_sing.dto.BoardEditDTO;
 import com.wandookong.voice_me_sing.dto.BoardSaveDTO;
 import com.wandookong.voice_me_sing.entity.BoardEntity;
 import com.wandookong.voice_me_sing.entity.UserEntity;
@@ -31,6 +32,8 @@ public class BoardService {
 
         String nickname = optionalUserEntity.get().getNickname();
 
+        System.out.println("nickname = " + nickname);
+
         boardRepository.save(BoardEntity.toBoardEntity(boardSaveDTO, nickname));
 
         return "SAVED";
@@ -41,9 +44,51 @@ public class BoardService {
         List<BoardDTO> boardDTOList = new ArrayList<>();
 
         for (BoardEntity boardEntity : boardEntityList) {
+            System.out.println("boardEntity.getBoardWriter() = " + boardEntity.getBoardWriter());
             boardDTOList.add(BoardDTO.toBoardDTO(boardEntity));
         }
 
         return boardDTOList;
+    }
+
+//    @Transactional
+    public List<BoardDTO> findByUser(String accessToken) {
+        String email = jwtUtil.getEmail(accessToken);
+
+//        String nickname = userRepository.findNicknameByEmail(email);
+
+        Optional<UserEntity> optionalUserEntity = userRepository.findByEmail(email);
+        String nickname = optionalUserEntity.get().getNickname();
+
+        List<BoardEntity> boardEntityList = boardRepository.findByBoardWriter(nickname);
+        List<BoardDTO> boardDTOList = new ArrayList<>();
+
+        for (BoardEntity boardEntity : boardEntityList) {
+            boardDTOList.add(BoardDTO.toBoardDTO(boardEntity));
+        }
+
+        return boardDTOList;
+    }
+
+    public String editPost(String accessToken, BoardEditDTO boardEditDTO) {
+        // 1. 수정하려는 게시글 작성자가 맞는지 확인
+        String email = jwtUtil.getEmail(accessToken);
+
+        Optional<UserEntity> optionalUserEntity = userRepository.findByEmail(email);
+        String nickname = optionalUserEntity.get().getNickname();
+
+        Optional<BoardEntity> optionalBoardEntity = boardRepository.findById(Long.valueOf(boardEditDTO.getBoardId()));
+        BoardEntity boardEntity = optionalBoardEntity.get();
+        String boardWriter = boardEntity.getBoardWriter();
+
+        if (!nickname.equals(boardWriter)) return "BAD_ACCESS";
+
+        // 2. 수정
+        boardEntity.setBoardTitle(boardEditDTO.getBoardTitle());
+        boardEntity.setBoardContents(boardEditDTO.getBoardContents());
+
+        boardRepository.save(boardEntity);
+
+        return "EDITED";
     }
 }
