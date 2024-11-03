@@ -35,15 +35,11 @@ public class BoardService {
         // 전체 게시글 리스트
         List<BoardEntity> boardEntityList = boardRepository.findAll();
 
-        System.out.println("boardEntityList = " + boardEntityList);
-
         // 전체 게시글 엔티티 -> DTO 변환
         List<BoardDTO> boardDTOList = new ArrayList<>();
         for (BoardEntity boardEntity : boardEntityList) {
             boardDTOList.add(BoardDTO.toBoardDTO(boardEntity));
         }
-
-        System.out.println("boardDTOList = " + boardDTOList);
 
         return boardDTOList;
     }
@@ -130,5 +126,14 @@ public class BoardService {
         boardEntity.setBoardHits(boardEntity.getBoardHits() + 1);
 
         boardRepository.save(boardEntity);
+    }
+
+    public void changeBoardWriter(String oldNickname, String newNickname) {
+        List<BoardEntity> boardEntityList = boardRepository.findByBoardWriter(oldNickname);
+
+        for (BoardEntity boardEntity : boardEntityList) {
+            boardEntity.setBoardWriter(newNickname);
+            boardRepository.save(boardEntity);
+        }
     }
 }
