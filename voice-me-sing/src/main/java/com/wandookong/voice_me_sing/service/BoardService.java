@@ -27,7 +27,7 @@ public class BoardService {
         String email = jwtUtil.getEmail(accessToken);
         String nickname = userRepository.getNicknameByEmail(email);
 
-        // nickname 을 바탕으로 게시글 저장
+        // nickname 과 boardSaveDTO(게시글 제목과 내용)을 바탕으로 게시글 저장
         BoardEntity boardEntity = boardRepository.save(BoardEntity.toBoardEntity(boardSaveDTO, nickname));
         return BoardDTO.toBoardDTO(boardEntity);
     }
@@ -59,7 +59,7 @@ public class BoardService {
     }
 
     public BoardDTO editPost(String accessToken, BoardEditDTO boardEditDTO) {
-        // 1. 수정하려는 게시글 작성자가 맞는지 확인
+        // 1. 수정하려는 게시글 작성자가 맞는지 확인 (checkWriter()와 로직 같음)
         // accessToken 으로부터 사용자 정보(nickname) 추출
         String email = jwtUtil.getEmail(accessToken);
         String nickname = userRepository.getNicknameByEmail(email);
@@ -72,7 +72,7 @@ public class BoardService {
         // 게시글 작성자와 수정 요청자가 다르면 null 리턴
         if (!nickname.equals(boardWriter)) return null;
 
-        // 2. 수정
+        // 2. 수정 반영
         boardEntity.setBoardTitle(boardEditDTO.getBoardTitle());
         boardEntity.setBoardContents(boardEditDTO.getBoardContents());
 
@@ -84,7 +84,11 @@ public class BoardService {
         // boardId 로 해당 게시글 조회
         Optional<BoardEntity> optionalBoardEntity = boardRepository.findById(Long.valueOf(boardId));
 
+        // 게시글이 존재하지 않을 경우 null 리턴
         if (optionalBoardEntity.isEmpty()) return null;
+
+        // 게시글이 존재할 경우 조회수 업데이트, DTO로 변환 후 리턴
+        updateBoardHits(boardId);
         BoardEntity boardEntity = optionalBoardEntity.get();
 
         return BoardDTO.toBoardDTO(boardEntity);
@@ -109,7 +113,7 @@ public class BoardService {
         boolean isWriter = checkWriter(boardId, accessToken);
         if (!isWriter) return false;
 
-        // 삭제
+        // 해당 아이디의 게시글 삭제
         boardRepository.deleteById(Long.valueOf(boardId));
 
         return true;

@@ -12,7 +12,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -54,9 +53,10 @@ public class TokenController {
             )
     })
     @PostMapping("/reissue")
+    // 리프레시 토큰을 기반으로 리프레시 토큰과 엑세스 토큰 재발급
     public ResponseEntity<?> reissue(
             @Parameter(description = "Refresh token for authentication\n인증을 위한 리프레시 토큰", required = true)
-            @CookieValue(value = "refresh") String refreshToken, HttpServletRequest request, HttpServletResponse response) {
+            @CookieValue(value = "refresh") String refreshToken, HttpServletResponse response) {
 //        String refreshToken = null;
 //        Cookie[] cookies = request.getCookies();
 //
@@ -69,20 +69,21 @@ public class TokenController {
 //        }
 //        System.out.println("refreshToken = " + refreshToken);
 
+        // 토큰 재발급 프로세스
         Map<String, String> result = reissueService.reissueAccessRefresh(refreshToken);
         String newRefreshToken = result.get("newRefreshToken");
         String newAccessToken = result.get("newAccessToken");
 
+        // 응답 생성
         if (newRefreshToken == null || newAccessToken == null) {
             ResponseDTO<String> responseDTO = new ResponseDTO<>("fail", result.get("message"), null);
-
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseDTO);
         } else {
+            // 쿠키와 헤더 설정
             response.addCookie(cookieUtil.createCookie("refresh", newRefreshToken));
             response.setHeader("access", newAccessToken);
 
             ResponseDTO<String> responseDTO = new ResponseDTO<>("success", "access and refresh tokens reissued", null);
-
             return ResponseEntity.status(HttpStatus.OK).body(responseDTO);
         }
 
@@ -150,10 +151,13 @@ public class TokenController {
             )
     })
     @PostMapping("/token-reformat")
+    // 소셜 로그인 후 쿠키로 발급된 엑세스 토큰을 헤더로 재전송하는 로직
     public ResponseEntity<?> reformatTokens(
             HttpServletResponse response,
+
             @Parameter(description = "Refresh token stored in cookies\n쿠키에 저장된 리프레시 토큰", required = false)
             @CookieValue(value = "refresh", required = false) String refreshToken,
+
             @Parameter(description = "Access token stored in cookies\n쿠키에 저장된 액세스 토큰", required = false)
             @CookieValue(value = "access", required = false) String accessToken) {
 
@@ -167,13 +171,13 @@ public class TokenController {
             Cookie expiredCookie = cookieUtil.createExpiredCookie("access");
             response.addCookie(expiredCookie);
 
+            // 응답 생성
             ResponseDTO<String> responseDTO = new ResponseDTO<>("success", "access token moved to the header", null);
-
             return ResponseEntity.status(HttpStatus.OK).body(responseDTO);
 
         } else {
+            // 응답 생성
             ResponseDTO<String> responseDTO = new ResponseDTO<>("fail", "no valid tokens in the cookies", null);
-
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseDTO);
         }
     }

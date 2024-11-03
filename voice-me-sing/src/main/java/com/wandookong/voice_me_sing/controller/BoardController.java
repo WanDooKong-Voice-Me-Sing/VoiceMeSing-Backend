@@ -1,9 +1,6 @@
 package com.wandookong.voice_me_sing.controller;
 
-import com.wandookong.voice_me_sing.dto.BoardDTO;
-import com.wandookong.voice_me_sing.dto.BoardEditDTO;
-import com.wandookong.voice_me_sing.dto.BoardSaveDTO;
-import com.wandookong.voice_me_sing.dto.ResponseDTO;
+import com.wandookong.voice_me_sing.dto.*;
 import com.wandookong.voice_me_sing.service.BoardService;
 import com.wandookong.voice_me_sing.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -43,6 +40,7 @@ public class BoardController {
             )
     })
     @PostMapping("/write")
+    // 게시글 작성
     public ResponseEntity<?> save(
             @Parameter(description = "Access token for authentication\n인증을 위한 엑세스 토큰", required = true)
             @RequestHeader(value = "access") String accessToken,
@@ -50,8 +48,10 @@ public class BoardController {
             @Parameter(description = "게시글 작성에 필요한 정보\n게시글 제목과 내용을 포함하는 객체", required = true)
             @RequestBody BoardSaveDTO boardSaveDTO) {
 
+        // 게시글 저장 프로세스
         BoardDTO boardDTO = boardService.save(boardSaveDTO, accessToken);
 
+        // 응답 생성
         ResponseDTO<BoardDTO> responseDTO = new ResponseDTO<>("success", "board uploaded", boardDTO);
         return ResponseEntity.ok().body(responseDTO);
     }
@@ -74,9 +74,12 @@ public class BoardController {
             )
     })
     @GetMapping("/")
+    // 전체 게시글 조회
     public ResponseEntity<?> findAll() {
+        // 전체 게시글 조회 프로세스
         List<BoardDTO> boardDTOList = boardService.findAll();
 
+        // 응답 생성
         ResponseDTO<List<BoardDTO>> responseDTO = new ResponseDTO<>("success", "get board list successfully", boardDTOList);
         return ResponseEntity.ok().body(responseDTO);
     }
@@ -102,14 +105,16 @@ public class BoardController {
             )
     })
     @GetMapping("/my-post")
+    // 내 게시글 조회
     public ResponseEntity<?> findMyPost(
             @Parameter(description = "Access token for user authentication\n사용자 인증을 위한 엑세스 토큰", required = true)
-            @RequestHeader(value = "access") String accessToken
-    ) {
+            @RequestHeader(value = "access") String accessToken) {
 
+        // 엑세스 토큰으로부터 nickname 추출 후 해당 nickname으로 작성된 게시글 검색
         String nickname = userService.getNicknameByToken(accessToken);
         List<BoardDTO> boardDTOList = boardService.findByNickname(nickname);
 
+        // 응답 생성
         ResponseDTO<List<BoardDTO>> responseDTO = new ResponseDTO<>("success", "get user's post list successfully", boardDTOList);
         return ResponseEntity.ok().body(responseDTO);
     }
@@ -135,6 +140,7 @@ public class BoardController {
             )
     })
     @GetMapping("/post-{nickname}")
+    // {nickname} 으로 작성된 게시글 조회
     public ResponseEntity<?> findUserPost(
             @Parameter(description = "Access token for user authentication\n사용자 인증을 위한 엑세스 토큰", required = true)
             @RequestHeader(value = "access") String accessToken,
@@ -142,14 +148,18 @@ public class BoardController {
             @Parameter(description = "Nickname of the user whose posts are to be retrieved\n조회할 사용자의 닉네임", required = true)
             @PathVariable(value = "nickname") String nickname
     ) {
-        // 사용자 nickname 과 같은 nickname 의 post 를 찾는다면 findMyPost()로 리다이렉트
+        // 1. 내 게시글을 찾는다면(내 닉네임 = 찾고자 하는 닉네임) /my-post findMyPost()로 리다이렉트
+        // 엑세스 토큰으로부터 nickname 추출 (내 닉네임 조회)
         String userNickname = userService.getNicknameByToken(accessToken);
+        // 조회하고자 하는 닉네임과 같다면 리다이렉트
         if (userNickname.equals(nickname)) {
             return findMyPost(accessToken);
         }
 
+        // 2. 해당 닉네임으로 작성된 게시글 리스트 조회
         List<BoardDTO> boardDTOList = boardService.findByNickname(nickname);
 
+        // 응답 생성
         ResponseDTO<List<BoardDTO>> responseDTO = new ResponseDTO<>("success", "get user's post list successfully", boardDTOList);
         return ResponseEntity.ok().body(responseDTO);
     }
@@ -176,6 +186,7 @@ public class BoardController {
             )
     })
     @GetMapping("/{id}")
+    // 게시글 아이디로 조회
     public ResponseEntity<?> findById(
             @Parameter(description = "Access token for user authentication. Optional if the user just wants to view the post.\n사용자 인증을 위한 엑세스 토큰. 사용자가 게시글을 보기만 할 경우 선택적", required = false)
             @RequestHeader(value = "access", required = false) String accessToken,
@@ -183,14 +194,16 @@ public class BoardController {
             @Parameter(description = "ID of the post to retrieve\n조회할 게시글의 ID", required = true)
             @PathVariable(value = "id") String boardId) {
 
-        // 해당 게시글 조회, 조회수 업데이트, 작성자 확인
+        // 1. 해당 게시글 조회 (해당 게시글 없을 경우 null)
         BoardDTO boardDTO = boardService.findById(boardId);
-        boardService.updateBoardHits(boardId);
+        // 2. 작성자 확인 (수정 여부 표시 위함)
         boolean isWriter = false;
+        // 게시글이 존재하고, 로그인한 상태라면(= accessToken 존재) 작성자 확인
         if (boardDTO != null && accessToken != null) {
             isWriter = boardService.checkWriter(boardId, accessToken);
         }
 
+        // 응답 생성
         if (boardDTO == null) {
             ResponseDTO<BoardDTO> responseDTO = new ResponseDTO<>("fail", "failed to get the post", null);
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseDTO);
@@ -205,18 +218,18 @@ public class BoardController {
     }
 
     @Operation(
-            summary = "Delete a post\n게시글 삭제",
-            description = "Allows a user to delete their own post. Validates that the user is the original writer before deletion.\n사용자가 자신의 게시글을 삭제할 수 있게 하며, 삭제 요청자가 원래 작성자인지 확인"
+            summary = "Delete a user's post\n사용자의 게시글 삭제",
+            description = "Allows a user to delete their own post by providing a board ID and an access token for authentication. Verifies that the user requesting the deletion is the original writer.\n사용자가 자신의 게시글을 삭제할 수 있도록 하며, 삭제 요청자가 원래 작성자인지 확인합니다."
     )
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Successfully deleted the post\n게시글 삭제 성공",
+            @ApiResponse(responseCode = "200", description = "Successfully deleted the post\n게시글을 성공적으로 삭제",
                     content = @Content(
                             mediaType = "application/json",
                             schema = @Schema(implementation = ResponseDTO.class),
                             examples = @ExampleObject(value = "{\"status\":\"success\",\"message\":\"delete the post successfully\",\"data\":null}")
                     )
             ),
-            @ApiResponse(responseCode = "404", description = "Failed to delete the post (post not found or user is not the writer)\n게시글 삭제 실패 (게시글을 찾을 수 없거나 사용자가 작성자가 아님)",
+            @ApiResponse(responseCode = "404", description = "Failed to delete the post\n게시글 삭제 실패",
                     content = @Content(
                             mediaType = "application/json",
                             schema = @Schema(implementation = ResponseDTO.class),
@@ -229,12 +242,14 @@ public class BoardController {
             @Parameter(description = "Access token for user authentication\n사용자 인증을 위한 엑세스 토큰", required = true)
             @RequestHeader(value = "access") String accessToken,
 
-            @Parameter(description = "ID of the board to be deleted\n삭제할 게시글의 ID: boardId", required = true)
-            @RequestBody Map<String, String> boardInfo) {
+            @Parameter(description = "ID of the board to be deleted\n삭제할 게시글의 ID", required = true)
+            @RequestBody BoardDeleteDTO boardDeleteDTO) {
 
-        String boardId = boardInfo.get("boardId");
+        // 게시글 아이디 추출 후 삭제 프로세스
+        String boardId = boardDeleteDTO.getBoardId();
         boolean deleted = boardService.delete(boardId, accessToken);
 
+        // 응답 생성
         if (deleted) {
             ResponseDTO<List<BoardDTO>> responseDTO = new ResponseDTO<>("success", "delete the post successfully", null);
             return ResponseEntity.ok().body(responseDTO);
@@ -265,6 +280,7 @@ public class BoardController {
             )
     })
     @PatchMapping("/edit")
+    // 게시글 수정
     public ResponseEntity<?> editPost(
             @Parameter(description = "Access token for user authentication\n사용자 인증을 위한 엑세스 토큰", required = true)
             @RequestHeader(value = "access") String accessToken,
@@ -272,8 +288,10 @@ public class BoardController {
             @Parameter(description = "Data required to edit the post, including board ID, new title, and new contents\n게시글 수정을 위한 데이터, 게시글 ID, 새로운 제목 및 내용 포함", required = true)
             @RequestBody BoardEditDTO boardEditDTO) {
 
+        // 게시글 수정 프로세스
         BoardDTO boardDTO = boardService.editPost(accessToken, boardEditDTO);
 
+        // 응답 생성
         if (boardDTO != null) {
             ResponseDTO<BoardDTO> responseDTO = new ResponseDTO<>("success", "edit user's post successfully", boardDTO);
             return ResponseEntity.ok().body(responseDTO);

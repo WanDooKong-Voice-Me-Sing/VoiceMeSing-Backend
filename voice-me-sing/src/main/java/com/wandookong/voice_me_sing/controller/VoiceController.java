@@ -3,6 +3,7 @@ package com.wandookong.voice_me_sing.controller;
 import com.wandookong.voice_me_sing.dto.ResponseDTO;
 import com.wandookong.voice_me_sing.dto.TrainVoiceDTO;
 import com.wandookong.voice_me_sing.dto.VoiceModelDTO;
+import com.wandookong.voice_me_sing.dto.VoiceModelDeleteDTO;
 import com.wandookong.voice_me_sing.service.VoiceService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -49,14 +50,20 @@ public class VoiceController {
     @PostMapping(value = "/train-voice", consumes = "multipart/form-data")
     // 음성 모델 생성: 1. 사용자 음성 저장(FE->BE) 2. AI 서버에 음성 모델 생성 요청(BE->AI)
     public ResponseEntity<?> uploadVoiceFile(
+            @Parameter(description = "Access token for authentication\n인증을 위한 액세스 토큰", required = true)
             @RequestHeader("access") String accessToken,
+
+            @Parameter(description = "The name of the voice model to create\n생성할 음성 모델의 이름", required = true)
             @RequestPart(name = "voiceModelName") String voiceModelName,
+
+            @Parameter(description = "The voice file to upload\n업로드할 음성 파일", required = true)
             @RequestPart(name = "voiceFile") MultipartFile voiceFile) throws IOException { // *** IO
 
+        // 1. 사용자 음성 저장 프로세스
         TrainVoiceDTO trainVoiceDTO = new TrainVoiceDTO(voiceModelName, voiceFile);
         boolean success = voiceService.saveVoiceFile(trainVoiceDTO, accessToken);
 
-        // 저장 결과 리턴
+        // 응답 생성 (저장 결과 리턴)
         if (success) {
             ResponseDTO<Map<String, String>> responseDTO = new ResponseDTO<>("success", "file uploaded", Map.of(
                     "voiceFileName", voiceFile.getOriginalFilename(),
@@ -89,17 +96,12 @@ public class VoiceController {
             @Parameter(description = "Access token for authentication\n인증을 위한 엑세스 토큰", required = true)
             @RequestHeader(value = "access") String accessToken) {
 
+        // 음성 모델 리스트 조회 프로세스
         List<VoiceModelDTO> voiceModelDTOs = voiceService.getVoiceModels(accessToken);
 
-        // 응답 데이터 생성
+        // 응답 생성
         ResponseDTO<List<VoiceModelDTO>> responseDTO = new ResponseDTO<>("success", "get voice models successfully", voiceModelDTOs);
         return ResponseEntity.ok().body(responseDTO);
-
-//        if (voiceModelDTOs.isEmpty()) {
-//            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ResponseDTO<String>("fail", "no user", null));
-//        } else {
-//
-//        }
     }
 
     @Operation(
@@ -127,13 +129,16 @@ public class VoiceController {
             )
     })
     @DeleteMapping("/model-delete")
+    // 사용자의 음성 모델 삭제
     public ResponseEntity<?> deleteVoiceModel(
             @Parameter(description = "Voice model ID to delete\n삭제할 음성 모델의 ID", required = true)
-            @RequestBody Map<String, String> voiceModelInfo) {
+            @RequestBody VoiceModelDeleteDTO voiceModelDeleteDTO) {
 
-        String voiceModelId = voiceModelInfo.get("voiceModelId");
+        // 음성 모델 삭제 프로세스
+        String voiceModelId = voiceModelDeleteDTO.getVoiceModelId();
         boolean deleted = voiceService.deleteVoiceModel(Long.valueOf(voiceModelId));
 
+        // 응답 생성
         if (deleted) {
             ResponseDTO<String> responseDTO = new ResponseDTO<>("success", "model deleted", null);
             return ResponseEntity.status(HttpStatus.OK).body(responseDTO);

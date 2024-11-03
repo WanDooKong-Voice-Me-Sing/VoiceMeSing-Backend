@@ -29,7 +29,6 @@ public class MainController {
 
         ResponseDTO<String> responseDTO = new ResponseDTO<>("success", "main page", null);
         return ResponseEntity.ok().body(responseDTO);
-
 //        return "main page";
     }
 

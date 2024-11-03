@@ -64,15 +64,16 @@ public class SongService {
 //        return aiService.toPythonCoverSong(userId, savePath, voiceModelId, resultSongName);
     }
 
+    // *** 사용자가 없을 경우 null 리턴: 사용자가 있는데 모델이 없을 경우는 어떻게 처리할 건지 문제 -> 우선 사용자 무조건 있다고 가정
     public List<CoverSongDTO> getCoverSongs(String accessToken) {
+        // accessToken 으로 사용자 조회
         String email = jwtUtil.getEmail(accessToken);
-        // 사용자가 없을 경우 null 리턴: 사용자가 있는데 모델이 없을 경우는 어떻게 처리할 건지 문제 -> 우선 사용자 무조건 있다고 가정
-
         Optional<UserEntity> optionalUserEntity = userRepository.findByEmail(email);
 
         assert optionalUserEntity.isPresent();
         UserEntity userEntity = optionalUserEntity.get();
 
+        // 커버곡 리스트 생성
         List<CoverSongDTO> coverSongDTOs = userEntity.getCoverSongs().stream()
                 .map(cs -> new CoverSongDTO(cs.getCoverSongId(), cs.getCoverSongName()))
                 .toList();
@@ -81,9 +82,11 @@ public class SongService {
     }
 
     public boolean deleteCoverSong(Long coverSongId) {
-        Optional<CoverSongEntity> byId = coverSongRepository.findById(coverSongId);
+        // 존재하는지 확인
+        Optional<CoverSongEntity> optionalCoverSongEntity = coverSongRepository.findById(coverSongId);
 
-        if (byId.isPresent()) {
+        // 존재할 경우 삭제
+        if (optionalCoverSongEntity.isPresent()) {
             coverSongRepository.deleteById(coverSongId);
             return true;
         } else return false;

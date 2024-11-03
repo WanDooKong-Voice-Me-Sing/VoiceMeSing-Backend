@@ -50,12 +50,15 @@ public class UserController {
             )
     })
     @GetMapping("/profile")
+    // 사용자 프로필 조회
     public ResponseEntity<?> getProfile(
             @Parameter(description = "Access token for authentication\n인증을 위한 엑세스 토큰", required = true)
             @RequestHeader(value = "access") String accessToken) {
 
+        // 프로필 조회 프로세스
         UserProfileDTO userProfileDTO = userService.getProfile(accessToken);
 
+        // 응답 생성
         if (userProfileDTO == null) {
             ResponseDTO<String> responseDTO = new ResponseDTO<>("fail", "no user found", null);
             return ResponseEntity.status(401).body(responseDTO);
@@ -90,12 +93,15 @@ public class UserController {
             )
     })
     @DeleteMapping("/account-delete")
+    // 회원 탈퇴
     public ResponseEntity<?> deleteAccount(
             @Parameter(description = "Access token for authentication\n인증을 위한 엑세스 토큰", required = true)
             @RequestHeader(value = "access") String accessToken) {
 
+        // 회원 삭제 프로세스
         boolean deleted = userService.deleteAccount(accessToken);
 
+        // 응답 생성
         if (deleted) {
             ResponseDTO<String> responseDTO = new ResponseDTO<>("success", "account deleted", null);
             return ResponseEntity.status(HttpStatus.OK).body(responseDTO);
@@ -139,13 +145,18 @@ public class UserController {
             )
     })
     @PatchMapping("/profile-update")
+    // 사용자 프로필 업데이트
     public ResponseEntity<?> updateProfile(
             @Parameter(description = "Access token for authentication\n인증을 위한 액세스 토큰", required = true)
             @RequestHeader(value = "access") String accessToken,
+
+            @Parameter(description = "DTO containing fields for updating the user profile\n사용자 프로필 업데이트를 위한 필드를 포함한 DTO", required = true)
             @RequestBody UserUpdateDTO userUpdateDTO) {
 
+        // 프로필 업데이트 프로세스
         Object updatedProfile = userService.updateProfile(accessToken, userUpdateDTO);
 
+        // 응답 생성
         if ("DUPLICATE_NICKNAME".equals(updatedProfile)) {
             ResponseDTO<String> responseDTO = new ResponseDTO<>("fail", "duplicate nickname", null);
             return ResponseEntity.status(HttpStatus.CONFLICT).body(responseDTO);

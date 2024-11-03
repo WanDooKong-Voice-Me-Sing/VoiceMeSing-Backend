@@ -1,6 +1,7 @@
 package com.wandookong.voice_me_sing.controller;
 
 import com.wandookong.voice_me_sing.dto.CoverSongDTO;
+import com.wandookong.voice_me_sing.dto.CoverSongDeleteDTO;
 import com.wandookong.voice_me_sing.dto.CreateSongDTO;
 import com.wandookong.voice_me_sing.dto.ResponseDTO;
 import com.wandookong.voice_me_sing.service.SongService;
@@ -31,62 +32,73 @@ public class SongController {
 
     @Operation(
             summary = "Create a cover song\n커버 곡 생성",
-            description = "Creates a cover song using the original audio and the provided voice model.\n원본 음원과 제공된 음성 모델을 사용하여 커버 곡을 생성"
+            description = "Creates a cover song using the original audio file and a specified voice model ID. The user must provide an access token for authentication, along with the name of the resulting cover song and the audio file to be transformed\n사용자는 인증을 위해 액세스 토큰을 제공해야 하며, 커버곡 이름과 변환할 오디오 파일을 함께 전송하여 커버 곡을 생성"
     )
     @ApiResponses(value = {
             @ApiResponse(
                     responseCode = "200",
-                    description = "File uploaded and created cover song successfully\n파일 업로드 및 커버 곡 생성 요청",
+                    description = "File uploaded and cover song created successfully\n파일 업로드 및 커버 곡 생성 성공",
                     content = @Content(
                             mediaType = "application/json",
                             schema = @Schema(implementation = ResponseDTO.class),
-                            examples = @ExampleObject("{\"status\":\"success\",\"message\":\"cover song uploaded\"," +
-                                    "\"data\":{\"resultSongName\":\"My Cover Song1\",\"songFile\":\"cover_song.mp3\"," +
-                                    "\"voiceModelId\":123}}")
+                            examples = @ExampleObject(value = "{\"status\":\"success\",\"message\":\"cover song uploaded\",\"data\":{\"resultSongName\":\"My Cover Song1\",\"songFileName\":\"cover_song.mp3\",\"voiceModelId\":123}}")
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "400",
+                    description = "Cover song creation failed due to invalid data\n유효하지 않은 데이터로 인한 커버 곡 생성 실패",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ResponseDTO.class),
+                            examples = @ExampleObject(value = "{\"status\":\"fail\",\"message\":\"cover song upload failed\",\"data\":null}")
                     )
             )
     })
     @PostMapping(value = "/create-song", consumes = "multipart/form-data")
-    public ResponseEntity<?> uploadCoverSong(
-            @Parameter(description = "Access token for authentication\n인증을 위한 엑세스 토큰", required = true)
+    // 커버곡 생성
+    public ResponseEntity<?> uploadSong(
+            @Parameter(description = "Access token for authentication\n인증을 위한 액세스 토큰", required = true)
             @RequestHeader(value = "access") String accessToken,
 
-            @Parameter(description = "The name of the result cover song\n결과 커버곡의 이름")
+            @Parameter(description = "Name of the resulting cover song\n생성할 커버곡의 이름", required = true, example = "My Cover Song")
             @RequestPart(name = "resultSongName") String resultSongName,
 
+            @Parameter(description = "Audio file to be transformed\n변환할 오디오 파일", required = true, example = "cover_song.mp3", schema = @Schema(type = "string", format = "binary"))
             @RequestPart(name = "songFile") MultipartFile songFile,
 
-            @Parameter(description = "ID of the voice model to be used\n사용할 음성 모델의 ID", required = true)
+            @Parameter(description = "ID of the voice model to be used\n사용할 음성 모델의 ID", required = true, example = "123")
             @RequestPart(name = "voiceModelId") String voiceModelId) throws IOException {
 
+        // 커버곡 생성 프로세스
         CreateSongDTO createSongDTO = new CreateSongDTO(resultSongName, songFile, Long.valueOf(voiceModelId));
         boolean success = songService.createCoverSong(createSongDTO, accessToken);
 
-        ResponseDTO<Map<String, Object>> responseDTO = new ResponseDTO<>("success", "cover song uploaded",
-                Map.of(
-                        "resultSongName", createSongDTO.getResultSongName(),
-                        "songFileName", createSongDTO.getSongFile().getOriginalFilename(),
-                        "voiceModelId", createSongDTO.getVoiceModelId()
-                ));
-
+        // 응답 생성
         if (success) {
+            ResponseDTO<Map<String, Object>> responseDTO = new ResponseDTO<>("success", "cover song uploaded",
+                    Map.of(
+                            "resultSongName", createSongDTO.getResultSongName(),
+                            "songFileName", createSongDTO.getSongFile().getOriginalFilename(),
+                            "voiceModelId", createSongDTO.getVoiceModelId()
+                    ));
             return ResponseEntity.ok().body(responseDTO);
         } else
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponseDTO<String>("fail", "cover song upload failed", null));
     }
 
     @Operation(
-            summary = "Get user cover song list\n사용자의 커버 음악 리스트 조회",
-            description = "Retrieves the list of cover songs associated with the authenticated user\n인증된 사용자의 커버 음악 리스트를 조회"
+            summary = "Get list of user's cover songs\n사용자의 커버 음악 리스트 조회",
+            description = "Retrieves a list of cover songs created by the user. Access token required for authentication\n사용자가 생성한 커버곡 리스트를 조회하며, 인증을 위해 엑세스 토큰이 필요"
     )
     @ApiResponses(value = {
             @ApiResponse(
                     responseCode = "200",
-                    description = "Successfully retrieved the cover song list\n커버 음악 리스트를 성공적으로 조회",
+                    description = "Cover songs retrieved successfully\n커버 음악 리스트 조회 성공",
                     content = @Content(
                             mediaType = "application/json",
                             schema = @Schema(implementation = ResponseDTO.class),
-                            examples = @ExampleObject(value = "{\"status\":\"success\",\"message\":\"get cover songs successfully\",\"data\":[{\"coverSongId\":1,\"coverSongName\":\"Song One\"},{\"coverSongId\":2,\"coverSongName\":\"Song Two\"}]}")
+                            examples = @ExampleObject(value = "{\"status\":\"success\",\"message\":\"get cover songs successfully\"," +
+                                    "\"data\":[{\"coverSongId\":12,\"coverSongName\":\"My Cover Song.mp3\"}]}")
                     )
             )
     })
@@ -96,26 +108,22 @@ public class SongController {
             @Parameter(description = "Access token for authentication\n인증을 위한 엑세스 토큰", required = true)
             @RequestHeader(value = "access") String accessToken) {
 
+        // 커버곡 리스트 조회 프로세스
         List<CoverSongDTO> coverSongDTOs = songService.getCoverSongs(accessToken);
 
+        // 응답 생성
         ResponseDTO<List<CoverSongDTO>> responseDTO = new ResponseDTO<>("success", "get cover songs successfully", coverSongDTOs);
         return ResponseEntity.ok().body(responseDTO);
-
-//        if (coverSongDTOs.isEmpty()) {
-//            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ResponseDTO<String>("fail", "no user", null));
-//        } else {
-//
-//        }
     }
 
     @Operation(
-            summary = "Delete user's cover song\n사용자의 커버 음악 삭제",
-            description = "Deletes the specified cover song based on the provided cover song ID\n제공된 커버 음악 ID를 기반으로 해당 사용자의 커버 음악을 삭제"
+            summary = "Delete a user's cover song\n사용자의 커버 음악 삭제",
+            description = "Deletes a specified cover song based on its ID\n지정된 ID에 해당하는 커버곡을 삭제"
     )
     @ApiResponses(value = {
             @ApiResponse(
                     responseCode = "200",
-                    description = "Successfully deleted the cover song\n커버 음악을 성공적으로 삭제",
+                    description = "Cover song deleted successfully\n커버곡 삭제 성공",
                     content = @Content(
                             mediaType = "application/json",
                             schema = @Schema(implementation = ResponseDTO.class),
@@ -124,7 +132,7 @@ public class SongController {
             ),
             @ApiResponse(
                     responseCode = "404",
-                    description = "Cover song not found\n커버 음악을 찾을 수 없음",
+                    description = "Cover song not found\n커버곡을 찾을 수 없음",
                     content = @Content(
                             mediaType = "application/json",
                             schema = @Schema(implementation = ResponseDTO.class),
@@ -133,13 +141,16 @@ public class SongController {
             )
     })
     @DeleteMapping("/coversong-delete")
-    // 사용자의 커버 음악 삭제
+    // 사용자의 커버곡 삭제
     public ResponseEntity<?> deleteCoverSong(
-            @RequestBody Map<String, String> coverSongInfo) {
+            @Parameter(description = "DTO containing the ID of the cover song to delete\n삭제할 커버곡의 ID를 포함하는 DTO", required = true)
+            @RequestBody CoverSongDeleteDTO coverSongDeleteDTO) {
 
-        String coverSongId = coverSongInfo.get("coverSongId");
+        // 커버곡 삭제 프로세스
+        String coverSongId = coverSongDeleteDTO.getCoverSongId();
         boolean deleted = songService.deleteCoverSong(Long.valueOf(coverSongId));
 
+        // 응답 생성
         if (deleted) {
             ResponseDTO<String> responseDTO = new ResponseDTO<>("success", "song deleted", null);
             return ResponseEntity.status(HttpStatus.OK).body(responseDTO);

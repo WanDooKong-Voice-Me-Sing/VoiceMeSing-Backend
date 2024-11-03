@@ -35,10 +35,24 @@ public class UserService {
 //        }
     }
 
-    public boolean deleteAccount(String accessToken) {
-
+    public UserProfileDTO getProfile(String accessToken) {
+        // accessToken 으로부터 얻은 email을 기반으로 사용자 검색
         String email = jwtUtil.getEmail(accessToken);
         Optional<UserEntity> optionalUserEntity = userRepository.findByEmail(email);
+
+        // DTO로 변환 후 리턴
+        if (optionalUserEntity.isPresent()) {
+            UserEntity userEntity = optionalUserEntity.get();
+            return UserProfileDTO.toUserProfileDTO(userEntity);
+        } else return null;
+    }
+
+    public boolean deleteAccount(String accessToken) {
+        // accessToken 으로부터 얻은 email을 기반으로 사용자 검색
+        String email = jwtUtil.getEmail(accessToken);
+        Optional<UserEntity> optionalUserEntity = userRepository.findByEmail(email);
+
+        // 존재할 경우 회원 삭제
         if (optionalUserEntity.isPresent()) {
             userRepository.delete(optionalUserEntity.get());
             return true;
@@ -47,6 +61,7 @@ public class UserService {
     }
 
     public Object updateProfile(String accessToken, UserUpdateDTO userUpdateDTO) {
+        // accessToken 으로부터 얻은 email을 기반으로 사용자 검색
         String email = jwtUtil.getEmail(accessToken);
         Optional<UserEntity> optionalUserEntity = userRepository.findByEmail(email);
 
@@ -75,17 +90,8 @@ public class UserService {
             userEntity.setIntroduction(userUpdateDTO.getIntroduction());
         }
 
+        // 수정한 내용 반영 후 DTO로 변환 리턴 (내용 확인 위함)
         userRepository.save(userEntity);
         return UserProfileDTO.toUserProfileDTO(userEntity);
-    }
-
-    public UserProfileDTO getProfile(String accessToken) {
-        String email = jwtUtil.getEmail(accessToken);
-        Optional<UserEntity> optionalUserEntity = userRepository.findByEmail(email);
-
-        if (optionalUserEntity.isPresent()) {
-            UserEntity userEntity = optionalUserEntity.get();
-            return UserProfileDTO.toUserProfileDTO(userEntity);
-        } else return null;
     }
 }

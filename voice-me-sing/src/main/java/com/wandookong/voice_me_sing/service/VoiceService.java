@@ -61,18 +61,16 @@ public class VoiceService {
 //        return aiService.toPythonVoiceModel(userId, savePath, voiceModelName); // 어떤 사용자가 어떤 음성으로 무슨 모델을
     }
 
+    // *** 사용자가 없을 경우 null 리턴: 사용자가 있는데 모델이 없을 경우는 어떻게 처리할 건지 문제 -> 우선 사용자 무조건 있다고 가정
     public List<VoiceModelDTO> getVoiceModels(String userToken) {
-        // access 토큰으로부터 사용자 id 추출
+        // accessToken 으로 사용자 조회
         String email = jwtUtil.getEmail(userToken);
-
-        // 사용자 검색
-        // 사용자가 없을 경우 null 리턴: 사용자가 있는데 모델이 없을 경우는 어떻게 처리할 건지 문제 -> 우선 사용자 무조건 있다고 가정
         Optional<UserEntity> optionalUserEntity = userRepository.findByEmail(email);
 
         assert optionalUserEntity.isPresent();
         UserEntity userEntity = optionalUserEntity.get();
 
-        // 사용자 소유 VoiceModels 의 DTO 리스트 생성
+        // 음성 모델 리스트 생성
         List<VoiceModelDTO> voiceModelDTOs = userEntity.getVoiceModels().stream()
                 .map(vm -> new VoiceModelDTO(vm.getVoiceModelId(), vm.getVoiceModelName()))
                 .toList();
@@ -81,12 +79,13 @@ public class VoiceService {
     }
 
     public boolean deleteVoiceModel(Long voiceModelId) {
+        // 존재하는지 확인
         Optional<VoiceModelEntity> optional = voiceModelRepository.findById(voiceModelId);
 
+        // 존재할 경우 삭제
         if (optional.isPresent()) {
             voiceModelRepository.deleteById(voiceModelId);
             return true;
-        }
-        return false;
+        } else return false;
     }
 }

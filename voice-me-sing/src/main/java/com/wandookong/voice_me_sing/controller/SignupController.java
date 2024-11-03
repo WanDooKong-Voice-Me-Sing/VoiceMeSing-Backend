@@ -52,19 +52,20 @@ public class SignupController {
     @PostMapping("/signup")
     public ResponseEntity<?> signupProcess(@RequestBody SignupDTO signupDTO) {
 
+        // 회원 가입 프로세스
         boolean signupSuccess = signupService.signup(signupDTO);
 
+        // 응답 생성
         if (signupSuccess) {
             ObjectMapper objectMapper = new ObjectMapper();
-            Map<String, Object> map = objectMapper.convertValue(signupDTO, new TypeReference<Map<String, Object>>() {
+            Map<String, Object> signupInfo = objectMapper.convertValue(signupDTO, new TypeReference<Map<String, Object>>() {
             });
-            map.remove("password");
-            ResponseDTO<Map<String, Object>> success = new ResponseDTO<>("success", "signup success", map);
+            signupInfo.remove("password");
+            ResponseDTO<Map<String, Object>> success = new ResponseDTO<>("success", "signup success", signupInfo);
 
             return ResponseEntity.status(HttpStatus.CREATED).body(success);
         } else {
-            ResponseDTO<Map<String, Object>> fail = new ResponseDTO<>("fail", "signup fail", null);
-
+            ResponseDTO<Object> fail = new ResponseDTO<>("fail", "signup fail", null);
             return ResponseEntity.status(HttpStatus.CONFLICT).body(fail);
         }
 
