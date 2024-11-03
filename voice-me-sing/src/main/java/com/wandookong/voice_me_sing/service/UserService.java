@@ -1,6 +1,7 @@
 package com.wandookong.voice_me_sing.service;
 
-import com.wandookong.voice_me_sing.dto.UpdateDTO;
+import com.wandookong.voice_me_sing.dto.UserProfileDTO;
+import com.wandookong.voice_me_sing.dto.UserUpdateDTO;
 import com.wandookong.voice_me_sing.entity.UserEntity;
 import com.wandookong.voice_me_sing.jwt.JWTUtil;
 import com.wandookong.voice_me_sing.repository.UserRepository;
@@ -45,7 +46,7 @@ public class UserService {
         return false;
     }
 
-    public String updateProfile(String accessToken, UpdateDTO updateDTO) {
+    public Object updateProfile(String accessToken, UserUpdateDTO userUpdateDTO) {
         String email = jwtUtil.getEmail(accessToken);
         Optional<UserEntity> optionalUserEntity = userRepository.findByEmail(email);
 
@@ -55,22 +56,36 @@ public class UserService {
         UserEntity userEntity = optionalUserEntity.get();
 
         // 닉네임 수정
-        if (updateDTO.getNickname() != null) {
-            Optional<UserEntity> byNickname = userRepository.findByNickname(updateDTO.getNickname());
+        if (userUpdateDTO.getNickname() != null) {
+            Optional<UserEntity> byNickname = userRepository.findByNickname(userUpdateDTO.getNickname());
             if (byNickname.isPresent()) {
                 return "DUPLICATE_NICKNAME";
             }
-            boardService.changeBoardWriter(userEntity.getNickname(), updateDTO.getNickname());
-            userEntity.setNickname(updateDTO.getNickname());
+            boardService.changeBoardWriter(userEntity.getNickname(), userUpdateDTO.getNickname());
+            userEntity.setNickname(userUpdateDTO.getNickname());
         }
 
         // 비밀번호 수정
-        if (updateDTO.getPassword() != null) {
-            userEntity.setPassword(bCryptPasswordEncoder.encode(updateDTO.getPassword()));
+        if (userUpdateDTO.getPassword() != null) {
+            userEntity.setPassword(bCryptPasswordEncoder.encode(userUpdateDTO.getPassword()));
+        }
+
+        // 자기소개 수정
+        if (userUpdateDTO.getIntroduction() != null) {
+            userEntity.setIntroduction(userUpdateDTO.getIntroduction());
         }
 
         userRepository.save(userEntity);
+        return UserProfileDTO.toUserProfileDTO(userEntity);
+    }
 
-        return userEntity.getNickname();
+    public UserProfileDTO getProfile(String accessToken) {
+        String email = jwtUtil.getEmail(accessToken);
+        Optional<UserEntity> optionalUserEntity = userRepository.findByEmail(email);
+
+        if (optionalUserEntity.isPresent()) {
+            UserEntity userEntity = optionalUserEntity.get();
+            return UserProfileDTO.toUserProfileDTO(userEntity);
+        } else return null;
     }
 }

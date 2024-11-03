@@ -1,7 +1,8 @@
 package com.wandookong.voice_me_sing.controller;
 
 import com.wandookong.voice_me_sing.dto.ResponseDTO;
-import com.wandookong.voice_me_sing.dto.UpdateDTO;
+import com.wandookong.voice_me_sing.dto.UserProfileDTO;
+import com.wandookong.voice_me_sing.dto.UserUpdateDTO;
 import com.wandookong.voice_me_sing.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -15,8 +16,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -55,17 +54,13 @@ public class UserController {
             @Parameter(description = "Access token for authentication\n인증을 위한 엑세스 토큰", required = true)
             @RequestHeader(value = "access") String accessToken) {
 
-//        String accessToken = request.getHeader("access");
-//        String email = jwtUtil.getEmail(accessToken);
+        UserProfileDTO userProfileDTO = userService.getProfile(accessToken);
 
-        String nickname = userService.getNicknameByToken(accessToken);
-
-        if (nickname == null) {
+        if (userProfileDTO == null) {
             ResponseDTO<String> responseDTO = new ResponseDTO<>("fail", "no user found", null);
             return ResponseEntity.status(401).body(responseDTO);
         } else {
-            ResponseDTO<Map<String, Object>> responseDTO = new ResponseDTO<>("success", "get profile",
-                    Map.of("nickname", nickname));
+            ResponseDTO<UserProfileDTO> responseDTO = new ResponseDTO<>("success", "get profile", userProfileDTO);
             return ResponseEntity.status(200).body(responseDTO);
         }
     }
@@ -147,16 +142,15 @@ public class UserController {
     public ResponseEntity<?> updateProfile(
             @Parameter(description = "Access token for authentication\n인증을 위한 액세스 토큰", required = true)
             @RequestHeader(value = "access") String accessToken,
-            @RequestBody UpdateDTO updateDTO) {
+            @RequestBody UserUpdateDTO userUpdateDTO) {
 
-        String updatedProfile = userService.updateProfile(accessToken, updateDTO);
+        Object updatedProfile = userService.updateProfile(accessToken, userUpdateDTO);
 
         if ("DUPLICATE_NICKNAME".equals(updatedProfile)) {
             ResponseDTO<String> responseDTO = new ResponseDTO<>("fail", "duplicate nickname", null);
             return ResponseEntity.status(HttpStatus.CONFLICT).body(responseDTO);
         } else if (updatedProfile != null) {
-            ResponseDTO<Map<String, String>> responseDTO = new ResponseDTO<>("success", "profile updated",
-                    Map.of("nickname", updatedProfile));
+            ResponseDTO<Object> responseDTO = new ResponseDTO<>("success", "profile updated", updatedProfile);
             return ResponseEntity.status(HttpStatus.OK).body(responseDTO);
         } else {
             ResponseDTO<String> responseDTO = new ResponseDTO<>("fail", "profile not found", null);

@@ -7,13 +7,16 @@ import lombok.ToString;
 
 @Getter
 @Setter
-@Schema(description = "회원 정봇 수정에 필요한 데이터 전송 객체")
+@Schema(description = "회원 정보 수정에 필요한 데이터 전송 객체")
 @ToString
-public class UpdateDTO {
+public class UserUpdateDTO {
 
     @Schema(description = "수정할 닉네임", example = "newNickname")
     String nickname;
 
     @Schema(description = "수정할 비밀번호", example = "newPassword")
     String password;
+
+    @Schema(description = "수정할 자기소개", example = "newIntroduction")
+    String introduction;
 }
