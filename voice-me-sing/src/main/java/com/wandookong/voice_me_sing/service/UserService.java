@@ -18,17 +18,19 @@ public class UserService {
     private final JWTUtil jwtUtil;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
-    public String getNickname(String accessToken) {
-
+    public String getNicknameByToken(String accessToken) {
+        // accessToken 으로부터 사용자 정보(nickname) 추출
         String email = jwtUtil.getEmail(accessToken);
-
-        Optional<UserEntity> optionalUserEntity = userRepository.findByEmail(email);
-        if (optionalUserEntity.isPresent()) {
-            UserEntity userEntity = optionalUserEntity.get();
-            return userEntity.getNickname();
-        } else {
-            return null;
-        }
+        return userRepository.getNicknameByEmail(email);
+//        String email = jwtUtil.getEmail(accessToken);
+//
+//        Optional<UserEntity> optionalUserEntity = userRepository.findByEmail(email);
+//        if (optionalUserEntity.isPresent()) {
+//            UserEntity userEntity = optionalUserEntity.get();
+//            return userEntity.getNickname();
+//        } else {
+//            return null;
+//        }
     }
 
     public boolean deleteAccount(String accessToken) {

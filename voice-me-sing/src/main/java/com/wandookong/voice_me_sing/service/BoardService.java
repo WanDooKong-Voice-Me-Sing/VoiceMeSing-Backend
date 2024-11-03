@@ -25,7 +25,7 @@ public class BoardService {
     public void save(BoardSaveDTO boardSaveDTO, String accessToken) {
         // accessToken 으로부터 사용자 정보(nickname) 추출
         String email = jwtUtil.getEmail(accessToken);
-        String nickname = userRepository.findNicknameByEmail(email);
+        String nickname = userRepository.getNicknameByEmail(email);
 
         // nickname 을 바탕으로 게시글 저장
         boardRepository.save(BoardEntity.toBoardEntity(boardSaveDTO, nickname));
@@ -48,11 +48,8 @@ public class BoardService {
         return boardDTOList;
     }
 
-    public List<BoardDTO> findByUser(String accessToken) {
-        // accessToken 으로부터 사용자 정보(nickname) 추출
-        String email = jwtUtil.getEmail(accessToken);
-        String nickname = userRepository.findNicknameByEmail(email);
-
+    // 이거를 accessToken -> nickname 으로 바꿔야 겠다
+    public List<BoardDTO> findByNickname(String nickname) {
         // nickname 으로 작성된 게시글 리스트 조회
         List<BoardEntity> boardEntityList = boardRepository.findByBoardWriter(nickname);
 
@@ -69,7 +66,7 @@ public class BoardService {
         // 1. 수정하려는 게시글 작성자가 맞는지 확인
         // accessToken 으로부터 사용자 정보(nickname) 추출
         String email = jwtUtil.getEmail(accessToken);
-        String nickname = userRepository.findNicknameByEmail(email);
+        String nickname = userRepository.getNicknameByEmail(email);
 
         // boardId 로 해당 게시글 boardWriter(nickname) 조회
         Optional<BoardEntity> optionalBoardEntity = boardRepository.findById(Long.valueOf(boardEditDTO.getBoardId()));
@@ -100,7 +97,7 @@ public class BoardService {
     public boolean checkWriter(String boardId, String accessToken) {
         // accessToken 으로부터 사용자 정보(nickname) 추출
         String email = jwtUtil.getEmail(accessToken);
-        String nickname = userRepository.findNicknameByEmail(email);
+        String nickname = userRepository.getNicknameByEmail(email);
 
         // boardId 로 해당 게시글 boardWriter(nickname) 조회
         Optional<BoardEntity> optionalBoardEntity = boardRepository.findById(Long.valueOf(boardId));

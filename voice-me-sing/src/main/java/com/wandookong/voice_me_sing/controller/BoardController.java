@@ -4,7 +4,9 @@ import com.wandookong.voice_me_sing.dto.BoardDTO;
 import com.wandookong.voice_me_sing.dto.BoardEditDTO;
 import com.wandookong.voice_me_sing.dto.BoardSaveDTO;
 import com.wandookong.voice_me_sing.dto.ResponseDTO;
+import com.wandookong.voice_me_sing.repository.UserRepository;
 import com.wandookong.voice_me_sing.service.BoardService;
+import com.wandookong.voice_me_sing.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -26,6 +28,8 @@ import java.util.Map;
 public class BoardController {
 
     private final BoardService boardService;
+    private final UserRepository userRepository;
+    private final UserService userService;
 
     @Operation(
             summary = "Save a new board post\n새로운 게시판 글 작성",
@@ -91,11 +95,29 @@ public class BoardController {
         return ResponseEntity.ok().body(responseDTO);
     }
 
-    @GetMapping("/my-post")
-    public ResponseEntity<?> findUserPost(
+    @GetMapping("/post-my")
+    public ResponseEntity<?> findMyPost(
             @RequestHeader(value = "access") String accessToken) {
 
-        List<BoardDTO> boardDTOList = boardService.findByUser(accessToken);
+        String nickname = userService.getNicknameByToken(accessToken);
+        List<BoardDTO> boardDTOList = boardService.findByNickname(nickname);
+
+        ResponseDTO<List<BoardDTO>> responseDTO = new ResponseDTO<>("success", "get user's post list successfully", boardDTOList);
+        return ResponseEntity.ok().body(responseDTO);
+    }
+
+    @GetMapping("/post-{nickname}")
+    public ResponseEntity<?> findUserPost(
+            @RequestHeader(value = "access") String accessToken,
+            @PathVariable(value = "nickname") String nickname
+    ) {
+        // 사용자 nickname 과 같은 nickname 의 post 를 찾는다면 findMyPost()로 리다이렉트
+        String userNickname = userService.getNicknameByToken(accessToken);
+        if (userNickname.equals(nickname)) {
+            return findMyPost(accessToken);
+        }
+
+        List<BoardDTO> boardDTOList = boardService.findByNickname(nickname);
 
         ResponseDTO<List<BoardDTO>> responseDTO = new ResponseDTO<>("success", "get user's post list successfully", boardDTOList);
         return ResponseEntity.ok().body(responseDTO);

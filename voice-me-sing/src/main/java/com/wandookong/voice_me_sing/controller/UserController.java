@@ -58,7 +58,7 @@ public class UserController {
 //        String accessToken = request.getHeader("access");
 //        String email = jwtUtil.getEmail(accessToken);
 
-        String nickname = userService.getNickname(accessToken);
+        String nickname = userService.getNicknameByToken(accessToken);
 
         if (nickname == null) {
             ResponseDTO<String> responseDTO = new ResponseDTO<>("fail", "no user found", null);

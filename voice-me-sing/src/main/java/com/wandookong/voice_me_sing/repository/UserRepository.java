@@ -16,5 +16,5 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
     Optional<UserEntity> findByNickname(String nickname);
 
     @Query(value = "select u.nickname from UserEntity u where u.email = :email")
-    String findNicknameByEmail(@Param("email") String email);
+    String getNicknameByEmail(@Param("email") String email);
 }
