@@ -5,7 +5,6 @@ import com.wandookong.voice_me_sing.entity.UserEntity;
 import com.wandookong.voice_me_sing.jwt.JWTUtil;
 import com.wandookong.voice_me_sing.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.boot.autoconfigure.web.servlet.error.BasicErrorController;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -18,18 +17,21 @@ public class UserService {
     private final UserRepository userRepository;
     private final JWTUtil jwtUtil;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
+    private final BoardService boardService;
 
-    public String getNickname(String accessToken) {
-
+    public String getNicknameByToken(String accessToken) {
+        // accessToken 으로부터 사용자 정보(nickname) 추출
         String email = jwtUtil.getEmail(accessToken);
-
-        Optional<UserEntity> optionalUserEntity = userRepository.findByEmail(email);
-        if (optionalUserEntity.isPresent()) {
-            UserEntity userEntity = optionalUserEntity.get();
-            return userEntity.getNickname();
-        } else {
-            return null;
-        }
+        return userRepository.getNicknameByEmail(email);
+//        String email = jwtUtil.getEmail(accessToken);
+//
+//        Optional<UserEntity> optionalUserEntity = userRepository.findByEmail(email);
+//        if (optionalUserEntity.isPresent()) {
+//            UserEntity userEntity = optionalUserEntity.get();
+//            return userEntity.getNickname();
+//        } else {
+//            return null;
+//        }
     }
 
     public boolean deleteAccount(String accessToken) {
@@ -50,17 +52,19 @@ public class UserService {
         if (optionalUserEntity.isEmpty()) {
             return null;
         }
-
         UserEntity userEntity = optionalUserEntity.get();
 
+        // 닉네임 수정
         if (updateDTO.getNickname() != null) {
             Optional<UserEntity> byNickname = userRepository.findByNickname(updateDTO.getNickname());
             if (byNickname.isPresent()) {
                 return "DUPLICATE_NICKNAME";
             }
+            boardService.changeBoardWriter(userEntity.getNickname(), updateDTO.getNickname());
             userEntity.setNickname(updateDTO.getNickname());
         }
 
+        // 비밀번호 수정
         if (updateDTO.getPassword() != null) {
             userEntity.setPassword(bCryptPasswordEncoder.encode(updateDTO.getPassword()));
         }

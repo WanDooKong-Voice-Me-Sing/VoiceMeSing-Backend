@@ -1,20 +1,16 @@
 package com.wandookong.voice_me_sing.service;
 
 import com.wandookong.voice_me_sing.aiserver.AiService;
-import com.wandookong.voice_me_sing.dto.ResponseDTO;
 import com.wandookong.voice_me_sing.dto.TrainVoiceDTO;
 import com.wandookong.voice_me_sing.dto.VoiceModelDTO;
 import com.wandookong.voice_me_sing.entity.UserEntity;
 import com.wandookong.voice_me_sing.entity.VoiceModelEntity;
-import com.wandookong.voice_me_sing.entity.VoiceTempEntity;
 import com.wandookong.voice_me_sing.jwt.JWTUtil;
 import com.wandookong.voice_me_sing.repository.UserRepository;
 import com.wandookong.voice_me_sing.repository.VoiceModelRepository;
 import com.wandookong.voice_me_sing.repository.VoiceTempRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 

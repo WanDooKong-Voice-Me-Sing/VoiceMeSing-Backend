@@ -59,7 +59,7 @@ public class SongController {
             @Parameter(description = "ID of the voice model to be used\n사용할 음성 모델의 ID", required = true)
             @RequestPart(name = "voiceModelId") String voiceModelId) throws IOException {
 
-        CreateSongDTO createSongDTO = new CreateSongDTO(resultSongName, songFile, Long.parseLong(voiceModelId));
+        CreateSongDTO createSongDTO = new CreateSongDTO(resultSongName, songFile, Long.valueOf(voiceModelId));
         boolean success = songService.createCoverSong(createSongDTO, accessToken);
 
         ResponseDTO<Map<String, Object>> responseDTO = new ResponseDTO<>("success", "cover song uploaded",
@@ -92,8 +92,9 @@ public class SongController {
     })
     @GetMapping("/collection-coversong")
     // 사용자의 커버 음악 리스트 조회
-    public ResponseEntity<?> getCoverSongs(@Parameter(description = "Access token for authentication\n인증을 위한 엑세스 토큰", required = true)
-                                           @RequestHeader(value = "access") String accessToken) {
+    public ResponseEntity<?> getCoverSongs(
+            @Parameter(description = "Access token for authentication\n인증을 위한 엑세스 토큰", required = true)
+            @RequestHeader(value = "access") String accessToken) {
 
         List<CoverSongDTO> coverSongDTOs = songService.getCoverSongs(accessToken);
 
@@ -133,9 +134,11 @@ public class SongController {
     })
     @DeleteMapping("/coversong-delete")
     // 사용자의 커버 음악 삭제
-    public ResponseEntity<?> deleteCoverSong(@RequestParam String coverSongId) {
+    public ResponseEntity<?> deleteCoverSong(
+            @RequestBody Map<String, String> coverSongInfo) {
 
-        boolean deleted = songService.deleteCoverSong(Long.parseLong(coverSongId));
+        String coverSongId = coverSongInfo.get("coverSongId");
+        boolean deleted = songService.deleteCoverSong(Long.valueOf(coverSongId));
 
         if (deleted) {
             ResponseDTO<String> responseDTO = new ResponseDTO<>("success", "song deleted", null);

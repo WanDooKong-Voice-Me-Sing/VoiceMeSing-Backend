@@ -6,7 +6,8 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Schema(description = "API 응답을 담고 있는 데이터 전송 객체")
-@Getter @Setter
+@Getter
+@Setter
 @AllArgsConstructor
 public class ResponseDTO<T> {
 

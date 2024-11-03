@@ -31,7 +31,7 @@ public class AiService {
         CoverSongRequestDTO coverSongRequestDTO = new CoverSongRequestDTO(userId, savePath, voiceModelId, resultSongName);
 
         String message = restTemplate.postForObject(pythonServerUrl, coverSongRequestDTO, String.class);
-        
+
         System.out.println("AiServer:" + message);
         System.out.println("AiService.toPythonCoverSong: Sent to python server");
 

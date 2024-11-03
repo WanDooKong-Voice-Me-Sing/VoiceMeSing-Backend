@@ -8,12 +8,14 @@ import lombok.ToString;
 import java.util.Date;
 
 @Entity
-@Getter @Setter
+@Getter
+@Setter
 @ToString
 @Table(name = "refresh_token")
 public class RefreshTokenEntity {
 
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long refreshTokenId;
 
     private String email;
