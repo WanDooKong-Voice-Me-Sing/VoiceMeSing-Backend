@@ -45,7 +45,6 @@ public class BoardService {
         return boardDTOList;
     }
 
-    // 이거를 accessToken -> nickname 으로 바꿔야 겠다
     public List<BoardDTO> findByNickname(String nickname) {
         // nickname 으로 작성된 게시글 리스트 조회
         List<BoardEntity> boardEntityList = boardRepository.findByBoardWriter(nickname);
