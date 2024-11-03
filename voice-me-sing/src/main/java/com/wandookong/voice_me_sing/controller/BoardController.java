@@ -106,7 +106,9 @@ public class BoardController {
             @RequestHeader(value = "access", required = false) String accessToken,
             @PathVariable(value = "id") String boardId) {
 
+        // 해당 게시글 조회, 조회수 업데이트, 작성자 확인
         BoardDTO boardDTO = boardService.findById(boardId);
+        boardService.updateBoardHits(boardId);
         boolean isWriter = false;
         if (boardDTO != null && accessToken != null) {
             isWriter = boardService.checkWriter(boardId, accessToken);

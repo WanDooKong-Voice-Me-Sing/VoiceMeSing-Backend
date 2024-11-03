@@ -129,8 +129,9 @@ public class VoiceController {
     @DeleteMapping("/model-delete")
     public ResponseEntity<?> deleteVoiceModel(
             @Parameter(description = "Voice model ID to delete\n삭제할 음성 모델의 ID", required = true)
-            @RequestParam String voiceModelId) {
+            @RequestBody Map<String, String> voiceModelInfo) {
 
+        String voiceModelId = voiceModelInfo.get("voiceModelId");
         boolean deleted = voiceService.deleteVoiceModel(Long.valueOf(voiceModelId));
 
         if (deleted) {

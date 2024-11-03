@@ -134,8 +134,10 @@ public class SongController {
     })
     @DeleteMapping("/coversong-delete")
     // 사용자의 커버 음악 삭제
-    public ResponseEntity<?> deleteCoverSong(@RequestParam String coverSongId) {
+    public ResponseEntity<?> deleteCoverSong(
+            @RequestBody Map<String, String> coverSongInfo) {
 
+        String coverSongId = coverSongInfo.get("coverSongId");
         boolean deleted = songService.deleteCoverSong(Long.valueOf(coverSongId));
 
         if (deleted) {

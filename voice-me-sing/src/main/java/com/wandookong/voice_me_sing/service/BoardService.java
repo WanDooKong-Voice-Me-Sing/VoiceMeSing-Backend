@@ -35,11 +35,15 @@ public class BoardService {
         // 전체 게시글 리스트
         List<BoardEntity> boardEntityList = boardRepository.findAll();
 
+        System.out.println("boardEntityList = " + boardEntityList);
+
         // 전체 게시글 엔티티 -> DTO 변환
         List<BoardDTO> boardDTOList = new ArrayList<>();
         for (BoardEntity boardEntity : boardEntityList) {
             boardDTOList.add(BoardDTO.toBoardDTO(boardEntity));
         }
+
+        System.out.println("boardDTOList = " + boardDTOList);
 
         return boardDTOList;
     }
@@ -116,5 +120,18 @@ public class BoardService {
         boardRepository.deleteById(Long.valueOf(boardId));
 
         return true;
+    }
+
+    public void updateBoardHits(String boardId) {
+        // boardId 로 해당 게시글 조회
+        Optional<BoardEntity> optionalBoardEntity = boardRepository.findById(Long.valueOf(boardId));
+
+        if (optionalBoardEntity.isEmpty()) return;
+        BoardEntity boardEntity = optionalBoardEntity.get();
+
+        // boardHits 업데이트
+        boardEntity.setBoardHits(boardEntity.getBoardHits() + 1);
+
+        boardRepository.save(boardEntity);
     }
 }
