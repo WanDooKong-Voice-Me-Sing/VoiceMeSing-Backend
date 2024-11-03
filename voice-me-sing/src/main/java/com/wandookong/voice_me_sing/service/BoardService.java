@@ -22,13 +22,14 @@ public class BoardService {
     private final JWTUtil jwtUtil;
     private final UserRepository userRepository;
 
-    public void save(BoardSaveDTO boardSaveDTO, String accessToken) {
+    public BoardDTO save(BoardSaveDTO boardSaveDTO, String accessToken) {
         // accessToken 으로부터 사용자 정보(nickname) 추출
         String email = jwtUtil.getEmail(accessToken);
         String nickname = userRepository.getNicknameByEmail(email);
 
         // nickname 을 바탕으로 게시글 저장
-        boardRepository.save(BoardEntity.toBoardEntity(boardSaveDTO, nickname));
+        BoardEntity boardEntity = boardRepository.save(BoardEntity.toBoardEntity(boardSaveDTO, nickname));
+        return BoardDTO.toBoardDTO(boardEntity);
     }
 
     public List<BoardDTO> findAll() {
@@ -58,7 +59,7 @@ public class BoardService {
         return boardDTOList;
     }
 
-    public boolean editPost(String accessToken, BoardEditDTO boardEditDTO) {
+    public BoardDTO editPost(String accessToken, BoardEditDTO boardEditDTO) {
         // 1. 수정하려는 게시글 작성자가 맞는지 확인
         // accessToken 으로부터 사용자 정보(nickname) 추출
         String email = jwtUtil.getEmail(accessToken);
@@ -69,15 +70,15 @@ public class BoardService {
         BoardEntity boardEntity = optionalBoardEntity.get();
         String boardWriter = boardEntity.getBoardWriter();
 
-        if (!nickname.equals(boardWriter)) return false;
+        // 게시글 작성자와 수정 요청자가 다르면 null 리턴
+        if (!nickname.equals(boardWriter)) return null;
 
         // 2. 수정
         boardEntity.setBoardTitle(boardEditDTO.getBoardTitle());
         boardEntity.setBoardContents(boardEditDTO.getBoardContents());
 
-        boardRepository.save(boardEntity);
-
-        return true;
+        BoardEntity newBoardEntity = boardRepository.save(boardEntity);
+        return BoardDTO.toBoardDTO(newBoardEntity);
     }
 
     public BoardDTO findById(String boardId) {

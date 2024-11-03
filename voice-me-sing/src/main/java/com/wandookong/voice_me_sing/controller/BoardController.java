@@ -4,6 +4,7 @@ import com.wandookong.voice_me_sing.dto.BoardDTO;
 import com.wandookong.voice_me_sing.dto.BoardEditDTO;
 import com.wandookong.voice_me_sing.dto.BoardSaveDTO;
 import com.wandookong.voice_me_sing.dto.ResponseDTO;
+import com.wandookong.voice_me_sing.entity.BoardEntity;
 import com.wandookong.voice_me_sing.repository.UserRepository;
 import com.wandookong.voice_me_sing.service.BoardService;
 import com.wandookong.voice_me_sing.service.UserService;
@@ -60,13 +61,9 @@ public class BoardController {
             @Parameter(description = "게시글 작성에 필요한 정보\n게시글 제목과 내용을 포함하는 객체", required = true)
             @RequestBody BoardSaveDTO boardSaveDTO) {
 
-        boardService.save(boardSaveDTO, accessToken);
+        BoardDTO boardDTO = boardService.save(boardSaveDTO, accessToken);
 
-        ResponseDTO<Map<String, String>> responseDTO = new ResponseDTO<>("success", "board uploaded",
-                Map.of(
-                        "boardTitle", boardSaveDTO.getBoardTitle(),
-                        "boardContents", boardSaveDTO.getBoardContents()
-                ));
+        ResponseDTO<BoardDTO> responseDTO = new ResponseDTO<>("success", "board uploaded", boardDTO);
         return ResponseEntity.ok().body(responseDTO);
     }
 
@@ -95,7 +92,7 @@ public class BoardController {
         return ResponseEntity.ok().body(responseDTO);
     }
 
-    @GetMapping("/post-my")
+    @GetMapping("/my-post")
     public ResponseEntity<?> findMyPost(
             @RequestHeader(value = "access") String accessToken) {
 
@@ -171,14 +168,10 @@ public class BoardController {
             @RequestHeader(value = "access") String accessToken,
             @RequestBody BoardEditDTO boardEditDTO) {
 
-        boolean edited = boardService.editPost(accessToken, boardEditDTO);
+        BoardDTO boardDTO = boardService.editPost(accessToken, boardEditDTO);
 
-        if (edited) {
-            ResponseDTO<Map<String, String>> responseDTO = new ResponseDTO<>("success", "get user's post list successfully",
-                    Map.of(
-                            "boardTitle", boardEditDTO.getBoardTitle(),
-                            "boardContents", boardEditDTO.getBoardContents()
-                    ));
+        if (boardDTO != null) {
+            ResponseDTO<BoardDTO> responseDTO = new ResponseDTO<>("success", "edit user's post successfully", boardDTO);
             return ResponseEntity.ok().body(responseDTO);
         } else {
             ResponseDTO<String> responseDTO = new ResponseDTO<>("fail", "failed to edit the post", null);
