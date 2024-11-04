@@ -20,10 +20,19 @@ public class UserService {
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final BoardService boardService;
 
+    public Long getUserIdByToken(String accessToken) {
+        // accessToken 으로부터 사용자의 아이디 추출
+        String email = jwtUtil.getEmail(accessToken);
+        Optional<UserEntity> optionalUserEntity = userRepository.findByEmail(email);
+        assert optionalUserEntity.isPresent();
+        UserEntity userEntity = optionalUserEntity.get();
+        return userEntity.getUserId();
+    }
+
     public String getNicknameByToken(String accessToken) {
         // accessToken 으로부터 사용자 정보(nickname) 추출
         String email = jwtUtil.getEmail(accessToken);
-        return userRepository.getNicknameByEmail(email);
+        return userRepository.findNicknameByEmail(email);
 //        String email = jwtUtil.getEmail(accessToken);
 //
 //        Optional<UserEntity> optionalUserEntity = userRepository.findByEmail(email);

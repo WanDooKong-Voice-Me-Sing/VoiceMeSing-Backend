@@ -1,7 +1,7 @@
 package com.wandookong.voice_me_sing.controller;
 
 import com.wandookong.voice_me_sing.dto.CoverSongDTO;
-import com.wandookong.voice_me_sing.dto.CoverSongDeleteDTO;
+import com.wandookong.voice_me_sing.dto.CoverSongIdDTO;
 import com.wandookong.voice_me_sing.dto.CreateSongDTO;
 import com.wandookong.voice_me_sing.dto.ResponseDTO;
 import com.wandookong.voice_me_sing.service.SongService;
@@ -70,8 +70,8 @@ public class SongController {
             @RequestPart(name = "voiceModelId") String voiceModelId) throws IOException {
 
         // 커버곡 생성 프로세스
-        CreateSongDTO createSongDTO = new CreateSongDTO(resultSongName, songFile, Long.valueOf(voiceModelId));
-        boolean success = songService.createCoverSong(createSongDTO, accessToken);
+        CreateSongDTO createSongDTO = new CreateSongDTO(resultSongName, songFile, voiceModelId);
+        boolean success = songService.saveSongBlobFile(createSongDTO, accessToken);
 
         // 응답 생성
         if (success) {
@@ -87,18 +87,17 @@ public class SongController {
     }
 
     @Operation(
-            summary = "Get list of user's cover songs\n사용자의 커버 음악 리스트 조회",
-            description = "Retrieves a list of cover songs created by the user. Access token required for authentication\n사용자가 생성한 커버곡 리스트를 조회하며, 인증을 위해 엑세스 토큰이 필요"
+            summary = "사용자의 커버 음악 리스트 조회",
+            description = "사용자의 인증된 커버 음악 리스트를 조회"
     )
     @ApiResponses(value = {
             @ApiResponse(
                     responseCode = "200",
-                    description = "Cover songs retrieved successfully\n커버 음악 리스트 조회 성공",
+                    description = "커버 음악 리스트 조회 성공\nCover songs retrieved successfully.",
                     content = @Content(
                             mediaType = "application/json",
                             schema = @Schema(implementation = ResponseDTO.class),
-                            examples = @ExampleObject(value = "{\"status\":\"success\",\"message\":\"get cover songs successfully\"," +
-                                    "\"data\":[{\"coverSongId\":12,\"coverSongName\":\"My Cover Song.mp3\"}]}")
+                            examples = @ExampleObject(value = "{\"status\":\"success\",\"message\":\"get cover songs successfully\",\"data\":[{\"coverSongId\":12,\"coverSongName\":\"My Cover Song.mp3\",\"coverSongFile\":\"<byte array>\",\"isPublic\":true}]}")
                     )
             )
     })
@@ -143,12 +142,15 @@ public class SongController {
     @DeleteMapping("/coversong-delete")
     // 사용자의 커버곡 삭제
     public ResponseEntity<?> deleteCoverSong(
+            @Parameter(description = "Access token for user authentication\n사용자 인증을 위한 엑세스 토큰", required = true)
+            @RequestHeader(value = "access") String accessToken,
+
             @Parameter(description = "DTO containing the ID of the cover song to delete\n삭제할 커버곡의 ID를 포함하는 DTO", required = true)
-            @RequestBody CoverSongDeleteDTO coverSongDeleteDTO) {
+            @RequestBody CoverSongIdDTO coverSongIdDTO) {
 
         // 커버곡 삭제 프로세스
-        String coverSongId = coverSongDeleteDTO.getCoverSongId();
-        boolean deleted = songService.deleteCoverSong(Long.valueOf(coverSongId));
+        String coverSongId = coverSongIdDTO.getCoverSongId();
+        boolean deleted = songService.deleteCoverSong(accessToken, Long.valueOf(coverSongId));
 
         // 응답 생성
         if (deleted) {
@@ -158,5 +160,38 @@ public class SongController {
             ResponseDTO<String> responseDTO = new ResponseDTO<>("fail", "song not found", null);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(responseDTO);
         }
+    }
+
+    @Operation(
+            summary = "Toggle the public status of a cover song\n커버곡의 공개 여부 토글",
+            description = "Toggles the visibility status of a specified cover song based on its ID\n지정된 ID에 해당하는 커버곡의 공개 여부를 토글"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Visibility toggled successfully\n공개 여부가 성공적으로 변경됨",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ResponseDTO.class),
+                            examples = @ExampleObject(value = "{\"status\":\"success\",\"message\":\"visibility toggled\",\"data\":true}")
+                    )
+            )
+    })
+    @PatchMapping("/coversong-toggle")
+    public ResponseEntity<?> togglePublicStatus(
+            @Parameter(description = "Access token for user authentication\n사용자 인증을 위한 엑세스 토큰", required = true)
+            @RequestHeader(value = "access") String accessToken,
+
+            @Parameter(description = "DTO containing the ID of the cover song to toggle the visibility\n공개 여부를 수정할 커버곡의 ID를 포함하는 DTO", required = true)
+            @RequestBody CoverSongIdDTO coverSongIdDTO) {
+
+        // 공개 여부 토글 프로세스
+        Object result = songService.togglePublicStatus(accessToken, coverSongIdDTO);
+
+        // 응답 생성
+        if (result instanceof Boolean) {
+            ResponseDTO<Boolean> responseDTO = new ResponseDTO<>("success", "visibility toggled", (Boolean) result);
+            return ResponseEntity.status(HttpStatus.OK).body(responseDTO);
+        } else return null;
     }
 }

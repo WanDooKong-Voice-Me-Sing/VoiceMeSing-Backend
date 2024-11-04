@@ -14,21 +14,21 @@ public class AiService {
     @Value("${spring.pythonServerUrl}")
     private String pythonServerUrl;
 
-    public boolean toPythonVoiceModel(Long userId, String savePath, String voiceModelName) {
-
-        VoiceModelRequestDTO voiceModelRequestDTO = new VoiceModelRequestDTO(userId, savePath, voiceModelName);
+    // 음성 모델 생성 요청 API
+    public boolean toPythonVoiceModel(String voiceId) {
+        VoiceModelRequestDTO voiceModelRequestDTO = new VoiceModelRequestDTO(voiceId);
 
         String message = restTemplate.postForObject(pythonServerUrl, voiceModelRequestDTO, String.class);
 
         System.out.println("AiServer:" + message);
-        System.out.println("AiService.toPythonVoiceModel: Sent to python server");
+        System.out.println("AiService.toPythonCoverSong: Sent to python server");
 
         return message != null;
     }
 
-    public boolean toPythonCoverSong(Long userId, String savePath, Long voiceModelId, String resultSongName) {
-
-        CoverSongRequestDTO coverSongRequestDTO = new CoverSongRequestDTO(userId, savePath, voiceModelId, resultSongName);
+    // 커버곡 생성 요청 API
+    public boolean toPythonCoverSong(String coverSongId) {
+        CoverSongRequestDTO coverSongRequestDTO = new CoverSongRequestDTO(coverSongId);
 
         String message = restTemplate.postForObject(pythonServerUrl, coverSongRequestDTO, String.class);
 
@@ -38,4 +38,27 @@ public class AiService {
         return message != null;
     }
 
+    // 수정 전 메소드:
+//    public boolean toPythonCoverSong(Long userId, String savePath, Long voiceModelId, String resultSongName) {
+//
+//        CoverSongRequestDTO coverSongRequestDTO = new CoverSongRequestDTO(userId, savePath, voiceModelId, resultSongName);
+//
+//        String message = restTemplate.postForObject(pythonServerUrl, coverSongRequestDTO, String.class);
+//
+//        System.out.println("AiServer:" + message);
+//        System.out.println("AiService.toPythonCoverSong: Sent to python server");
+//
+//        return message != null;
+//    }
+//    public boolean toPythonVoiceModel(Long userId, String savePath, String voiceModelName) {
+//
+//        VoiceModelRequestDTO voiceModelRequestDTO = new VoiceModelRequestDTO(userId, savePath, voiceModelName);
+//
+//        String message = restTemplate.postForObject(pythonServerUrl, voiceModelRequestDTO, String.class);
+//
+//        System.out.println("AiServer:" + message);
+//        System.out.println("AiService.toPythonVoiceModel: Sent to python server");
+//
+//        return message != null;
+//    }
 }

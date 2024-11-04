@@ -3,10 +3,11 @@ package com.wandookong.voice_me_sing.entity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Getter
-//@Setter
+@Setter
 @Table(name = "voice_temp")
 @NoArgsConstructor
 public class VoiceTempEntity {
@@ -15,14 +16,10 @@ public class VoiceTempEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long voiceId;
 
-    private String originalVoiceFileName;
-    private String storedVoiceFileName;
-    private String voiceFilePath;
+    @Lob // 바이너리 데이터를 위한 annotation
+    private byte[] voiceFile;
 
-    public VoiceTempEntity(String originalVoiceFileName, String storedVoiceFileName, String voiceFilePath) {
-        this.originalVoiceFileName = originalVoiceFileName;
-        this.storedVoiceFileName = storedVoiceFileName;
-        this.voiceFilePath = voiceFilePath;
-    }
-//    private String modelName;
+    private String voiceModelName;
+
+    private String userId;
 }

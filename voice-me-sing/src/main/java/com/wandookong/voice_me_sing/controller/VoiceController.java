@@ -61,7 +61,7 @@ public class VoiceController {
 
         // 1. 사용자 음성 저장 프로세스
         TrainVoiceDTO trainVoiceDTO = new TrainVoiceDTO(voiceModelName, voiceFile);
-        boolean success = voiceService.saveVoiceFile(trainVoiceDTO, accessToken);
+        boolean success = voiceService.saveVoiceBlobFile(trainVoiceDTO, accessToken);
 
         // 응답 생성 (저장 결과 리턴)
         if (success) {
@@ -131,12 +131,15 @@ public class VoiceController {
     @DeleteMapping("/model-delete")
     // 사용자의 음성 모델 삭제
     public ResponseEntity<?> deleteVoiceModel(
+            @Parameter(description = "Access token for user authentication\n사용자 인증을 위한 엑세스 토큰", required = true)
+            @RequestHeader(value = "access") String accessToken,
+
             @Parameter(description = "Voice model ID to delete\n삭제할 음성 모델의 ID", required = true)
             @RequestBody VoiceModelDeleteDTO voiceModelDeleteDTO) {
 
         // 음성 모델 삭제 프로세스
         String voiceModelId = voiceModelDeleteDTO.getVoiceModelId();
-        boolean deleted = voiceService.deleteVoiceModel(Long.valueOf(voiceModelId));
+        boolean deleted = voiceService.deleteVoiceModel(accessToken, Long.valueOf(voiceModelId));
 
         // 응답 생성
         if (deleted) {

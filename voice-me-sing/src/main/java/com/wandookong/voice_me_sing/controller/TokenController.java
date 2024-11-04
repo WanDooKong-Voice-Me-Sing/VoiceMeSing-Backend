@@ -90,26 +90,26 @@ public class TokenController {
     }
 
     @Operation(
-            summary = "Check refresh token existence\n리프레시 토큰 소유 여부 확인",
-            description = "Checks whether the user has a valid refresh token. This is used to distinguish between logged-in and non-logged-in users.\n유효한 리프레시 토큰의 존재 여부를 확인하여 로그인 유저와 비로그인 유저를 구별"
+            summary = "Refresh token 소유 여부 확인",
+            description = "사용자가 리프레시 토큰을 보유하고 있는지 확인. 새로고침 시 엑세스 토큰이 소실될 수 있으므로, 매 요청마다 엑세스 토큰 발급 필요"
     )
     @ApiResponses(value = {
             @ApiResponse(
-                    responseCode = "200",
-                    description = "Refresh token existence check completed\n리프레시 토큰 소유 여부 확인 완료",
+                    responseCode = "200-1",
+                    description = "Refresh token exists check succeeded\n리프레시 토큰 존재 확인 성공",
                     content = @Content(
                             mediaType = "application/json",
                             schema = @Schema(implementation = ResponseDTO.class),
-                            examples = @ExampleObject("{\"status\":\"success\",\"message\":\"Refresh token exists\",\"data\":true}")
+                            examples = @ExampleObject(value = "{\"status\":\"success\",\"message\":\"Refresh token exists\",\"data\":true}")
                     )
             ),
             @ApiResponse(
-                    responseCode = "200",
-                    description = "No valid refresh token found\n유효한 리프레시 토큰이 없음",
+                    responseCode = "200-2",
+                    description = "No valid refresh token\n리프레시 토큰이 없음",
                     content = @Content(
                             mediaType = "application/json",
                             schema = @Schema(implementation = ResponseDTO.class),
-                            examples = @ExampleObject("{\"status\":\"success\",\"message\":\"No valid refresh token\",\"data\":false}")
+                            examples = @ExampleObject(value = "{\"status\":\"success\",\"message\":\"No valid refresh token\",\"data\":false}")
                     )
             )
     })

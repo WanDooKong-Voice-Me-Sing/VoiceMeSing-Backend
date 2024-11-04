@@ -21,5 +21,5 @@ public class CreateSongDTO {
     private MultipartFile songFile;
 
     @Schema(description = "사용할 음성 모델의 ID", example = "123")
-    private Long voiceModelId;
+    private String voiceModelId;
 }

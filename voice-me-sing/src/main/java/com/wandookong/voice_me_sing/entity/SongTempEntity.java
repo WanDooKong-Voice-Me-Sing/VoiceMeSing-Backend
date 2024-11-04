@@ -16,13 +16,11 @@ public class SongTempEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long songId;
 
-    private String originalSongFileName;
-    private String storedSongFileName;
-    private String songFilePath;
+    private byte[] coverSongFile;
 
-    public SongTempEntity(String originalSongFileName, String storedSongFileName, String songFilePath) {
-        this.originalSongFileName = originalSongFileName;
-        this.storedSongFileName = storedSongFileName;
-        this.songFilePath = songFilePath;
-    }
+    private String resultSongName;
+
+    private String voiceModelId;
+
+    private String userId;
 }

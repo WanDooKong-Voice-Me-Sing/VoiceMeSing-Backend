@@ -25,27 +25,26 @@ public class UserController {
     private final UserService userService;
 
     @Operation(
-            summary = "Get user profile\n사용자 프로필 조회",
-            description = "Retrieves the user's profile information based on the access token.\n액세스 토큰을 기반으로 사용자의 프로필 정보 조회"
+            summary = "사용자 프로필 조회",
+            description = "사용자의 프로필 정보를 조회"
     )
     @ApiResponses(value = {
             @ApiResponse(
                     responseCode = "200",
-                    description = "Successfully retrieved user profile\n사용자 프로필 성공적으로 조회",
+                    description = "프로필 조회 성공\nProfile retrieved successfully",
                     content = @Content(
                             mediaType = "application/json",
                             schema = @Schema(implementation = ResponseDTO.class),
-                            examples = @ExampleObject("{\"status\":\"success\",\"message\":\"get profile\",\"data\":{" +
-                                    "\"nickname\":\"wandookong123\"}}")
+                            examples = @ExampleObject(value = "{\"status\":\"success\",\"message\":\"get profile\",\"data\":{\"nickname\":\"userNickname\",\"introduction\":\"userIntroduction\"}}")
                     )
             ),
             @ApiResponse(
                     responseCode = "401",
-                    description = "No user found\n사용자를 찾을 수 없음",
+                    description = "사용자 찾을 수 없음\nNo user found",
                     content = @Content(
                             mediaType = "application/json",
                             schema = @Schema(implementation = ResponseDTO.class),
-                            examples = @ExampleObject("{\"status\":\"fail\",\"message\":\"no user found\",\"data\":null}")
+                            examples = @ExampleObject(value = "{\"status\":\"fail\",\"message\":\"no user found\",\"data\":null}")
                     )
             )
     })
@@ -112,22 +111,22 @@ public class UserController {
     }
 
     @Operation(
-            summary = "Update user profile\n사용자 프로필 업데이트",
-            description = "Updates the user profile with provided information such as nickname or password.\n닉네임이나 비밀번호 등 사용자 프로필을 업데이트"
+            summary = "사용자 프로필 업데이트",
+            description = "사용자의 프로필 정보를 업데이트"
     )
     @ApiResponses(value = {
             @ApiResponse(
                     responseCode = "200",
-                    description = "Profile successfully updated\n프로필 성공적으로 업데이트",
+                    description = "프로필 업데이트 성공\nProfile updated successfully",
                     content = @Content(
                             mediaType = "application/json",
                             schema = @Schema(implementation = ResponseDTO.class),
-                            examples = @ExampleObject(value = "{\"status\":\"success\",\"message\":\"profile updated\",\"data\":{\"nickname\":\"newNickname\"}}")
+                            examples = @ExampleObject(value = "{\"status\":\"success\",\"message\":\"profile updated\",\"data\":{\"nickname\":\"newNickname\",\"introduction\":\"newIntroduction\"}}")
                     )
             ),
             @ApiResponse(
                     responseCode = "404",
-                    description = "Profile not found\n프로필을 찾을 수 없음",
+                    description = "프로필을 찾을 수 없음\nProfile not found",
                     content = @Content(
                             mediaType = "application/json",
                             schema = @Schema(implementation = ResponseDTO.class),
@@ -136,7 +135,7 @@ public class UserController {
             ),
             @ApiResponse(
                     responseCode = "409",
-                    description = "Duplicate nickname\n중복된 닉네임",
+                    description = "닉네임 중복\nDuplicate nickname",
                     content = @Content(
                             mediaType = "application/json",
                             schema = @Schema(implementation = ResponseDTO.class),
