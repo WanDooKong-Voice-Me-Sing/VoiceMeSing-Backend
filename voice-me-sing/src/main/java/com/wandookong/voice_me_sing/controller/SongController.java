@@ -70,8 +70,8 @@ public class SongController {
             @RequestPart(name = "voiceModelId") String voiceModelId) throws IOException {
 
         // 커버곡 생성 프로세스
-        CreateSongDTO createSongDTO = new CreateSongDTO(resultSongName, songFile, Long.valueOf(voiceModelId));
-        boolean success = songService.createCoverSong(createSongDTO, accessToken);
+        CreateSongDTO createSongDTO = new CreateSongDTO(resultSongName, songFile, voiceModelId);
+        boolean success = songService.saveSongBlobFile(createSongDTO, accessToken);
 
         // 응답 생성
         if (success) {

@@ -61,7 +61,7 @@ public class VoiceController {
 
         // 1. 사용자 음성 저장 프로세스
         TrainVoiceDTO trainVoiceDTO = new TrainVoiceDTO(voiceModelName, voiceFile);
-        boolean success = voiceService.saveVoiceFile(trainVoiceDTO, accessToken);
+        boolean success = voiceService.saveVoiceBlobFile(trainVoiceDTO, accessToken);
 
         // 응답 생성 (저장 결과 리턴)
         if (success) {

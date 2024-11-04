@@ -16,4 +16,7 @@ public class CoverSongDTO {
 
     @Schema(description = "커버 음원의 이름", example = "My Cover Song.mp3")
     private String coverSongName;
+
+    @Schema(description = "커버곡 파일", example = "My Cover Song.mp3")
+    private byte[] coverSongFile;
 }

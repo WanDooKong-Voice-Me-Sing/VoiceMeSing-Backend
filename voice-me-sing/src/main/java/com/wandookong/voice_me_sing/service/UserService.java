@@ -23,7 +23,7 @@ public class UserService {
     public String getNicknameByToken(String accessToken) {
         // accessToken 으로부터 사용자 정보(nickname) 추출
         String email = jwtUtil.getEmail(accessToken);
-        return userRepository.getNicknameByEmail(email);
+        return userRepository.findNicknameByEmail(email);
 //        String email = jwtUtil.getEmail(accessToken);
 //
 //        Optional<UserEntity> optionalUserEntity = userRepository.findByEmail(email);

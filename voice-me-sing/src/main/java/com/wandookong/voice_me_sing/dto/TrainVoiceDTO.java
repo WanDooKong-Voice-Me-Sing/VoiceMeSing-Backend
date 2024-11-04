@@ -15,7 +15,7 @@ import org.springframework.web.multipart.MultipartFile;
 public class TrainVoiceDTO {
 
     @Schema(description = "음성 모델 학습 후 설정할 모델 이름", example = "My Voice Model")
-    private String modelName;
+    private String voiceModelName;
 
     @Schema(description = "업로드할 음성 파일", type = "string", format = "binary", example = "voice.mp3")
     private MultipartFile voiceFile;

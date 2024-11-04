@@ -17,9 +17,10 @@ public class CoverSongEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long coverSongId;
-    private String coverSongName;
-    private String savePath;
-//    private T coverSongFile;
+
+    private String resultSongName;
+
+    private byte[] coverSongFile;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")

@@ -25,7 +25,7 @@ public class BoardService {
     public BoardDTO save(BoardSaveDTO boardSaveDTO, String accessToken) {
         // accessToken 으로부터 사용자 정보(nickname) 추출
         String email = jwtUtil.getEmail(accessToken);
-        String nickname = userRepository.getNicknameByEmail(email);
+        String nickname = userRepository.findNicknameByEmail(email);
 
         // nickname 과 boardSaveDTO(게시글 제목과 내용)을 바탕으로 게시글 저장
         BoardEntity boardEntity = boardRepository.save(BoardEntity.toBoardEntity(boardSaveDTO, nickname));
@@ -62,7 +62,7 @@ public class BoardService {
         // 1. 수정하려는 게시글 작성자가 맞는지 확인 (checkWriter()와 로직 같음)
         // accessToken 으로부터 사용자 정보(nickname) 추출
         String email = jwtUtil.getEmail(accessToken);
-        String nickname = userRepository.getNicknameByEmail(email);
+        String nickname = userRepository.findNicknameByEmail(email);
 
         // boardId 로 해당 게시글 boardWriter(nickname) 조회
         Optional<BoardEntity> optionalBoardEntity = boardRepository.findById(Long.valueOf(boardEditDTO.getBoardId()));
@@ -97,7 +97,7 @@ public class BoardService {
     public boolean checkWriter(String boardId, String accessToken) {
         // accessToken 으로부터 사용자 정보(nickname) 추출
         String email = jwtUtil.getEmail(accessToken);
-        String nickname = userRepository.getNicknameByEmail(email);
+        String nickname = userRepository.findNicknameByEmail(email);
 
         // boardId 로 해당 게시글 boardWriter(nickname) 조회
         Optional<BoardEntity> optionalBoardEntity = boardRepository.findById(Long.valueOf(boardId));

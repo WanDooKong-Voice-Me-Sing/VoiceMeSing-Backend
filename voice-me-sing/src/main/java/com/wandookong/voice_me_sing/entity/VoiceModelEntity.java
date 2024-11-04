@@ -14,11 +14,14 @@ import lombok.Setter;
 @AllArgsConstructor
 //@JsonIgnoreProperties({"userEntity"})
 public class VoiceModelEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long voiceModelId;
+
     private String voiceModelName;
-//    private String FilePath; // => voiceModelFile 로 변경
+
+    private byte[] voiceModelFile; // => filePath 로 변경 ?
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
