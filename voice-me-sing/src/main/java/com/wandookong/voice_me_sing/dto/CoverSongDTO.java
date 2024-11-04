@@ -19,4 +19,7 @@ public class CoverSongDTO {
 
     @Schema(description = "커버곡 파일", example = "My Cover Song.mp3")
     private byte[] coverSongFile;
+
+    @Schema(description = "커버곡 공개 여부", example = "true")
+    private boolean isPublic;
 }

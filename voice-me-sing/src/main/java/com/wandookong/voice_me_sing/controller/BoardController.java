@@ -219,7 +219,7 @@ public class BoardController {
 
     @Operation(
             summary = "Delete a user's post\n사용자의 게시글 삭제",
-            description = "Allows a user to delete their own post by providing a board ID and an access token for authentication. Verifies that the user requesting the deletion is the original writer.\n사용자가 자신의 게시글을 삭제할 수 있도록 하며, 삭제 요청자가 원래 작성자인지 확인합니다."
+            description = "Allows a user to delete their own post by providing a board ID and an access token for authentication. Verifies that the user requesting the deletion is the original writer.\n사용자가 자신의 게시글을 삭제할 수 있도록 하며, 삭제 요청자가 원래 작성자인지 확인"
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successfully deleted the post\n게시글을 성공적으로 삭제",

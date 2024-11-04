@@ -2,6 +2,7 @@ package com.wandookong.voice_me_sing.service;
 
 import com.wandookong.voice_me_sing.aiserver.AiService;
 import com.wandookong.voice_me_sing.dto.CoverSongDTO;
+import com.wandookong.voice_me_sing.dto.CoverSongIdDTO;
 import com.wandookong.voice_me_sing.dto.CreateSongDTO;
 import com.wandookong.voice_me_sing.entity.CoverSongEntity;
 import com.wandookong.voice_me_sing.entity.SongTempEntity;
@@ -27,6 +28,7 @@ public class SongService {
     private final JWTUtil jwtUtil;
     private final UserRepository userRepository;
     private final CoverSongRepository coverSongRepository;
+    private final UserService userService;
 
     @Value("${spring.savePath}")
     private String path;
@@ -71,22 +73,43 @@ public class SongService {
 
         // 커버곡 리스트 생성
         List<CoverSongDTO> coverSongDTOs = userEntity.getCoverSongs().stream()
-                .map(cs -> new CoverSongDTO(cs.getCoverSongId(), cs.getResultSongName(), cs.getCoverSongFile()))
+                .map(cs -> new CoverSongDTO(cs.getCoverSongId(), cs.getResultSongName(), cs.getCoverSongFile(), cs.isPublic()))
                 .toList();
 
         return coverSongDTOs;
     }
 
-    public boolean deleteCoverSong(Long coverSongId) {
-        // 존재하는지 확인
+    public boolean deleteCoverSong(String accessToken, Long coverSongId) {
+        // 해당 아이디의 커버곡이 존재하는지 확인
         Optional<CoverSongEntity> optionalCoverSongEntity = coverSongRepository.findById(coverSongId);
+        if (optionalCoverSongEntity.isEmpty()) return false;
+        CoverSongEntity coverSongEntity = optionalCoverSongEntity.get();
 
-        // 존재할 경우 삭제
-        if (optionalCoverSongEntity.isPresent()) {
+        // accessToken 으로부터 사용자의 아이디 추출
+        Long userId = userService.getUserIdByToken(accessToken);
+
+        // 아이디 비교를 통해 사용자의 커버곡인지 확인 후 삭제
+        if (userId.equals(coverSongEntity.getUserEntity().getUserId())) {
             coverSongRepository.deleteById(coverSongId);
             return true;
         } else return false;
 
+    }
+
+    public void togglePublicStatus(String accessToken, CoverSongIdDTO coverSongIdDTO) {
+        // 해당 아이디의 커버곡이 존재하는지 확인
+        Optional<CoverSongEntity> optionalCoverSongEntity = coverSongRepository.findById(Long.valueOf(coverSongIdDTO.getCoverSongId()));
+        if (optionalCoverSongEntity.isEmpty()) return;
+        CoverSongEntity coverSongEntity = optionalCoverSongEntity.get();
+
+        // accessToken 으로부터 사용자의 아이디 추출
+        Long userId = userService.getUserIdByToken(accessToken);
+
+        // 아이디 비교를 통해 사용자의 커버곡인지 확인 후 공개 여부 토글 반영
+        if (userId.equals(coverSongEntity.getUserEntity().getUserId())) {
+            coverSongEntity.setPublic(!coverSongEntity.isPublic());
+            coverSongRepository.save(coverSongEntity);
+        }
     }
 
     // 수정 전 메소드 (EFS 사용 가정):

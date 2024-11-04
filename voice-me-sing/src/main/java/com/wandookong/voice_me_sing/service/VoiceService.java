@@ -27,6 +27,7 @@ public class VoiceService {
     private final JWTUtil jwtUtil;
     private final AiService aiService;
     private final VoiceModelRepository voiceModelRepository;
+    private final UserService userService;
 
     @Value("${spring.savePath}")
     private String path;
@@ -76,12 +77,17 @@ public class VoiceService {
         return voiceModelDTOs;
     }
 
-    public boolean deleteVoiceModel(Long voiceModelId) {
-        // 존재하는지 확인
-        Optional<VoiceModelEntity> optional = voiceModelRepository.findById(voiceModelId);
+    public boolean deleteVoiceModel(String accessToken, Long voiceModelId) {
+        // 해당 아이디의 모델이 존재하는지 확인
+        Optional<VoiceModelEntity> optionalVoiceModelEntity = voiceModelRepository.findById(voiceModelId);
+        if (optionalVoiceModelEntity.isEmpty()) return false;
+        VoiceModelEntity voiceModelEntity = optionalVoiceModelEntity.get();
 
-        // 존재할 경우 삭제
-        if (optional.isPresent()) {
+        // accessToken 으로부터 사용자의 아이디 추출
+        Long userId = userService.getUserIdByToken(accessToken);
+
+        // 아이디 비교를 통해 사용자의 모델인지 확인 후 삭제
+        if (userId.equals(voiceModelEntity.getUserEntity().getUserId())) {
             voiceModelRepository.deleteById(voiceModelId);
             return true;
         } else return false;

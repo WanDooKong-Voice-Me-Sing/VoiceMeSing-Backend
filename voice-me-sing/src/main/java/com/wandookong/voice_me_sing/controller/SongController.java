@@ -1,7 +1,7 @@
 package com.wandookong.voice_me_sing.controller;
 
 import com.wandookong.voice_me_sing.dto.CoverSongDTO;
-import com.wandookong.voice_me_sing.dto.CoverSongDeleteDTO;
+import com.wandookong.voice_me_sing.dto.CoverSongIdDTO;
 import com.wandookong.voice_me_sing.dto.CreateSongDTO;
 import com.wandookong.voice_me_sing.dto.ResponseDTO;
 import com.wandookong.voice_me_sing.service.SongService;
@@ -143,12 +143,15 @@ public class SongController {
     @DeleteMapping("/coversong-delete")
     // 사용자의 커버곡 삭제
     public ResponseEntity<?> deleteCoverSong(
+            @Parameter(description = "Access token for user authentication\n사용자 인증을 위한 엑세스 토큰", required = true)
+            @RequestHeader(value = "access") String accessToken,
+
             @Parameter(description = "DTO containing the ID of the cover song to delete\n삭제할 커버곡의 ID를 포함하는 DTO", required = true)
-            @RequestBody CoverSongDeleteDTO coverSongDeleteDTO) {
+            @RequestBody CoverSongIdDTO coverSongIdDTO) {
 
         // 커버곡 삭제 프로세스
-        String coverSongId = coverSongDeleteDTO.getCoverSongId();
-        boolean deleted = songService.deleteCoverSong(Long.valueOf(coverSongId));
+        String coverSongId = coverSongIdDTO.getCoverSongId();
+        boolean deleted = songService.deleteCoverSong(accessToken, Long.valueOf(coverSongId));
 
         // 응답 생성
         if (deleted) {
@@ -158,5 +161,20 @@ public class SongController {
             ResponseDTO<String> responseDTO = new ResponseDTO<>("fail", "song not found", null);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(responseDTO);
         }
+    }
+
+    @PatchMapping("/coversong-toggle")
+    public ResponseEntity<?> togglePublicStatus(
+            @Parameter(description = "Access token for user authentication\n사용자 인증을 위한 엑세스 토큰", required = true)
+            @RequestHeader(value = "access") String accessToken,
+
+            @Parameter(description = "DTO containing the ID of the cover song to delete\n삭제할 커버곡의 ID를 포함하는 DTO", required = true)
+            @RequestBody CoverSongIdDTO coverSongIdDTO) {
+
+        songService.togglePublicStatus(accessToken, coverSongIdDTO);
+
+        // 응답 생성
+        ResponseDTO<String> responseDTO = new ResponseDTO<>("success", "visibility toggled", null);
+        return ResponseEntity.status(HttpStatus.OK).body(responseDTO);
     }
 }

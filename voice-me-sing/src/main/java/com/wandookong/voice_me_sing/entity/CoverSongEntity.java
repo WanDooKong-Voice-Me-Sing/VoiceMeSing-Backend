@@ -22,6 +22,8 @@ public class CoverSongEntity {
 
     private byte[] coverSongFile;
 
+    private boolean isPublic;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private UserEntity userEntity;

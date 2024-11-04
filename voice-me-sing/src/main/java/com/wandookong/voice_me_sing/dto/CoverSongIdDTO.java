@@ -6,8 +6,8 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class CoverSongDeleteDTO {
+public class CoverSongIdDTO {
 
-    @Schema(description = "삭제할 커버곡의 식별자", example = "3")
+    @Schema(description = "커버곡의 식별자", example = "3")
     private String coverSongId;
 }
