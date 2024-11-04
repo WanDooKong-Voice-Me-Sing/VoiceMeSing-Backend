@@ -96,10 +96,10 @@ public class SongService {
 
     }
 
-    public void togglePublicStatus(String accessToken, CoverSongIdDTO coverSongIdDTO) {
+    public Object togglePublicStatus(String accessToken, CoverSongIdDTO coverSongIdDTO) {
         // 해당 아이디의 커버곡이 존재하는지 확인
         Optional<CoverSongEntity> optionalCoverSongEntity = coverSongRepository.findById(Long.valueOf(coverSongIdDTO.getCoverSongId()));
-        if (optionalCoverSongEntity.isEmpty()) return;
+        if (optionalCoverSongEntity.isEmpty()) return "";
         CoverSongEntity coverSongEntity = optionalCoverSongEntity.get();
 
         // accessToken 으로부터 사용자의 아이디 추출
@@ -109,7 +109,8 @@ public class SongService {
         if (userId.equals(coverSongEntity.getUserEntity().getUserId())) {
             coverSongEntity.setPublic(!coverSongEntity.isPublic());
             coverSongRepository.save(coverSongEntity);
-        }
+            return coverSongEntity.isPublic();
+        } else return "";
     }
 
     // 수정 전 메소드 (EFS 사용 가정):

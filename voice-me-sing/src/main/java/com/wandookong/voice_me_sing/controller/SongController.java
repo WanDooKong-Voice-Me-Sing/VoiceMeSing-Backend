@@ -186,10 +186,12 @@ public class SongController {
             @RequestBody CoverSongIdDTO coverSongIdDTO) {
 
         // 공개 여부 토글 프로세스
-        songService.togglePublicStatus(accessToken, coverSongIdDTO);
+        Object result = songService.togglePublicStatus(accessToken, coverSongIdDTO);
 
         // 응답 생성
-        ResponseDTO<String> responseDTO = new ResponseDTO<>("success", "visibility toggled", null);
-        return ResponseEntity.status(HttpStatus.OK).body(responseDTO);
+        if (result instanceof Boolean) {
+            ResponseDTO<Boolean> responseDTO = new ResponseDTO<>("success", "visibility toggled", (Boolean) result);
+            return ResponseEntity.status(HttpStatus.OK).body(responseDTO);
+        } else return null;
     }
 }
