@@ -113,6 +113,15 @@ public class SongService {
         } else return "";
     }
 
+    public List<CoverSongDTO> findAllCoverSongs() {
+        // 커버곡 리스트 생성
+        List<CoverSongDTO> coverSongDTOs = coverSongRepository.findAllByIsPublic(true).stream()
+                .map(cs -> new CoverSongDTO(cs.getCoverSongId(), cs.getResultSongName(), cs.getCoverSongFile(), cs.isPublic()))
+                .toList();
+
+        return coverSongDTOs;
+    }
+
     // 수정 전 메소드 (EFS 사용 가정):
 //    public boolean createCoverSong(CreateSongDTO createSongDTO, String accessToken) throws IOException {
 //        // 1. 음원 파일 이름 설정 후 지정 폴더에 저장 (temp)
