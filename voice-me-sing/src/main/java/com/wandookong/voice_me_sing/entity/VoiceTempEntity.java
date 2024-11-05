@@ -17,6 +17,7 @@ public class VoiceTempEntity {
     private Long voiceId;
 
     @Lob // 바이너리 데이터를 위한 annotation
+    @Column(columnDefinition = "MEDIUMBLOB")
     private byte[] voiceFile;
 
     private String voiceModelName;

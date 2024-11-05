@@ -21,6 +21,8 @@ public class VoiceModelEntity {
 
     private String voiceModelName;
 
+    @Lob
+    @Column(columnDefinition = "MEDIUMBLOB")
     private byte[] voiceModelFile; // => filePath 로 변경 ?
 
     @ManyToOne(fetch = FetchType.LAZY)

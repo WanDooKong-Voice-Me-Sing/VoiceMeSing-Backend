@@ -20,6 +20,8 @@ public class CoverSongEntity {
 
     private String resultSongName;
 
+    @Lob
+    @Column(columnDefinition = "MEDIUMBLOB")
     private byte[] coverSongFile;
 
     private boolean isPublic;

@@ -16,6 +16,8 @@ public class SongTempEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long songId;
 
+    @Lob
+    @Column(columnDefinition = "MEDIUMBLOB")
     private byte[] coverSongFile;
 
     private String resultSongName;
