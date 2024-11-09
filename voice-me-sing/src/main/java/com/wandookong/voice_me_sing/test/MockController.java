@@ -21,9 +21,15 @@ public class MockController {
     @PostMapping(value = "/test", consumes = "multipart/form-data")
     public void uploadMockSong(
             @Parameter(description = "Audio file to be transformed\n변환할 오디오 파일", required = true, example = "cover_song.mp3", schema = @Schema(type = "string", format = "binary"))
-            @RequestPart(name = "songFile") MultipartFile songFile) throws IOException {
+            @RequestPart(name = "songFile") MultipartFile songFile,
+
+            @Parameter(description = "Name of the resulting cover song\n생성할 커버곡의 이름", required = true, example = "My Cover Song")
+            @RequestPart(name = "resultSongName") String resultSongName,
+
+            @Parameter(description = "ID of the User", required = true, example = "1")
+            @RequestPart(name = "userId") String userid) throws IOException {
 
         // Mock 삽입 프로세스
-        mockService.saveMockFile(songFile);
+        mockService.saveMockFile(songFile, resultSongName, userid);
     }
 }
