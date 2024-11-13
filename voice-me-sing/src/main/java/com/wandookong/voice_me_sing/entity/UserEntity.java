@@ -36,6 +36,9 @@ public class UserEntity {
     @Column(nullable = false)
     private String role;
 
+    @Column(nullable = true)
+    private Boolean isSocialLogin;
+
     @OneToMany(mappedBy = "userEntity", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<VoiceModelEntity> voiceModels;
 

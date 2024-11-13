@@ -35,7 +35,7 @@ public class UserController {
                     content = @Content(
                             mediaType = "application/json",
                             schema = @Schema(implementation = ResponseDTO.class),
-                            examples = @ExampleObject(value = "{\"status\":\"success\",\"message\":\"get profile\",\"data\":{\"nickname\":\"userNickname\",\"introduction\":\"userIntroduction\"}}")
+                            examples = @ExampleObject(value = "{\"status\":\"success\",\"message\":\"get profile\",\"data\":{\"nickname\":\"userNickname\",\"introduction\":\"userIntroduction\",\"isSocialLogin\":true}}")
                     )
             ),
             @ApiResponse(
@@ -121,7 +121,7 @@ public class UserController {
                     content = @Content(
                             mediaType = "application/json",
                             schema = @Schema(implementation = ResponseDTO.class),
-                            examples = @ExampleObject(value = "{\"status\":\"success\",\"message\":\"profile updated\",\"data\":{\"nickname\":\"newNickname\",\"introduction\":\"newIntroduction\"}}")
+                            examples = @ExampleObject(value = "{\"status\":\"success\",\"message\":\"profile updated\",\"data\":{\"nickname\":\"newNickname\",\"introduction\":\"newIntroduction\",\"isSocialLogin\":true}}")
                     )
             ),
             @ApiResponse(
