@@ -33,6 +33,7 @@ public class SignupService {
         userEntity.setEmail(email);
         userEntity.setNickname(nickname);
         userEntity.setRole("ROLE_USER");
+        userEntity.setIsSocialLogin(false);
 
         userRepository.save(userEntity);
 
