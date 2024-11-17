@@ -13,7 +13,7 @@ import java.io.IOException;
 
 @RestController
 @RequiredArgsConstructor
-@Tag(name = "Test API", description = "사용하지 마세요")
+@Tag(name = "Test API", description = "테스트 데이터 삽입 로직")
 public class MockController {
 
     private final MockService mockService;
@@ -27,9 +27,9 @@ public class MockController {
             @RequestPart(name = "resultSongName") String resultSongName,
 
             @Parameter(description = "ID of the User", required = true, example = "1")
-            @RequestPart(name = "userId") String userid) throws IOException {
+            @RequestPart(name = "userId") String userId) throws IOException {
 
         // Mock 삽입 프로세스
-        mockService.saveMockFile(songFile, resultSongName, userid);
+        mockService.saveMockFile(songFile, resultSongName, userId);
     }
 }

@@ -56,7 +56,7 @@ public class VoiceService {
         VoiceTempEntity saved = voiceTempRepository.save(voiceTempEntity);
         String voiceId = String.valueOf(saved.getVoiceId());
 
-//        return aiService.toPythonVoiceModel(voiceId);
+        aiService.toPythonVoiceModel(voiceId);
         return true;
     }
 
