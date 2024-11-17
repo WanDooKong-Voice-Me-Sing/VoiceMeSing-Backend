@@ -36,7 +36,7 @@ public class UserEntity {
     @Column(nullable = false)
     private String role;
 
-    @Column(nullable = true)
+    @Column(nullable = false)
     private Boolean isSocialLogin;
 
     @OneToMany(mappedBy = "userEntity", cascade = CascadeType.ALL, orphanRemoval = true)

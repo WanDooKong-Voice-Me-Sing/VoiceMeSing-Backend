@@ -13,7 +13,7 @@ import lombok.ToString;
 @AllArgsConstructor
 public class CoverSongRequestDTO {
 
-    @Schema(description = "", example = "2")
+    @Schema(description = "AI 서버가 커버곡을 생성하는 데 필요한 song_temp 의 primary key", example = "2")
     private String coverSongId;
 
 //    @Schema(description = "", example = "")

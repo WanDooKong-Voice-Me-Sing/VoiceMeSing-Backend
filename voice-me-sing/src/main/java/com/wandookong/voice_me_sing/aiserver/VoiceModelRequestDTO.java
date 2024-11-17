@@ -13,7 +13,7 @@ import lombok.ToString;
 @AllArgsConstructor
 public class VoiceModelRequestDTO {
 
-    @Schema(description = "", example = "4")
+    @Schema(description = "AI 서버가 음성 모델을 생성하는 데 필요한 voice_temp 의 primary key", example = "4")
     private String voiceId;
 
 //    @Schema(description = "", example = "")
