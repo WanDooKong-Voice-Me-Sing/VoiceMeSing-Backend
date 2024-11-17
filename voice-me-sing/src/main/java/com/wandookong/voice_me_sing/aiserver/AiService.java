@@ -15,27 +15,29 @@ public class AiService {
     private String pythonServerUrl;
 
     // 음성 모델 생성 요청 API
-    public boolean toPythonVoiceModel(String voiceId) {
+    public void toPythonVoiceModel(String voiceId) {
+        String pythonServerEndpoint = pythonServerUrl + "/api/model/create";
         VoiceModelRequestDTO voiceModelRequestDTO = new VoiceModelRequestDTO(voiceId);
 
-        String message = restTemplate.postForObject(pythonServerUrl, voiceModelRequestDTO, String.class);
+        restTemplate.postForObject(pythonServerEndpoint, voiceModelRequestDTO, String.class);
 
-        System.out.println("AiServer:" + message);
         System.out.println("AiService.toPythonCoverSong: Sent to python server");
 
-        return message != null;
+//        return message != null;
+//        return true;
     }
 
     // 커버곡 생성 요청 API
-    public boolean toPythonCoverSong(String coverSongId) {
+    public void toPythonCoverSong(String coverSongId) {
+        String pythonServerEndpoint = pythonServerUrl + "/api/coversong/create";
         CoverSongRequestDTO coverSongRequestDTO = new CoverSongRequestDTO(coverSongId);
 
-        String message = restTemplate.postForObject(pythonServerUrl, coverSongRequestDTO, String.class);
+        restTemplate.postForObject(pythonServerEndpoint, coverSongRequestDTO, String.class);
 
-        System.out.println("AiServer:" + message);
         System.out.println("AiService.toPythonCoverSong: Sent to python server");
 
-        return message != null;
+//        return message != null;
+//        return true;
     }
 
     // 수정 전 메소드:

@@ -56,9 +56,9 @@ public class SongService {
 
         // 저장 후 자동 생성되는 id 값 전달
         SongTempEntity saved = songTempRepository.save(songTempEntity);
-        Long coverSongId = saved.getSongId();
+        String coverSongId = String.valueOf(saved.getSongId());
 
-//        return aiService.toPythonCoverSong(coverSongId);
+        aiService.toPythonCoverSong(coverSongId);
         return true;
     }
 
