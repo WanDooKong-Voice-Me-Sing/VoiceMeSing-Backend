@@ -3,6 +3,16 @@
 
 ---
 
+## 프로젝트 개요 (배경, 동기, 목적)
+최근 유튜브에서 특정 인물의 목소리로 다양한 커버곡을 만들어 공유하는 콘텐츠가 인기를 끌고 있습니다. 그러나 대부분의 음성 변환 프로그램은 복잡하고 음질이 떨어져 일반 사용자들이 쉽게 접근하기 어렵습니다. 이에 우리는 간단한 절차로 고품질의 AI 음성 변환 기능을 제공하는 플랫폼을 개발하고, 사용자가 AI 지식 없이도 창작물을 만들고 공유할 수 있는 커뮤니티 기능을 추가하여, 누구나 쉽게 활용할 수 있는 환경을 조성하는 것을 목표로 이 프로젝트를 기획했습니다.
+
+## 기술 스택
+- **Backend**: Java, Spring Boot
+- **Database**: MySQL
+- **Authentication**: JWT, OAuth2.0 (카카오, 네이버)
+- **Build Tool**: Gradle
+- **Other**: Docker, AWS (EC2, RDS), Git, Github, Swagger
+
 ## 핵심 기능
 ### 📋 회원 관리
 - **회원 가입**:
@@ -177,6 +187,12 @@ java -jar <filePath/fileName>.jar
 ```bash
 http://localhost:<port>
 ```
+
+### Swagger Docs
+```bash
+http://localhost:<port>/swagger-ui
+```
+
 ---
 
 ## 문의
